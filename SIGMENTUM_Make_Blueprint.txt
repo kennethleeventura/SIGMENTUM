@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "name": "SIGMENTUM — Sheet → GPT → Sheet + Telegram + File Output",
+    "description": "Pull queued rows from Google Sheets, generate GPT signal, update sheet, create downloadable TXT file, upload to Drive, and return share link."
+  },
+  "flow": [
+    {
+      "id": 1,
+      "module": "tools:scheduler",
+      "parameters": { "type": "interval", "interval": 15, "unit": "minutes" }
+    },
+    {
+      "id": 2,
+      "module": "google-sheets:searchRows",
+      "parameters": {
+        "spreadsheetId": "PASTE_YOUR_SHEET_ID",
+        "sheetName": "SIGNAL_LOG",
+        "filter": "GPT_Status = QUEUE",
+        "limit": 10
+      }
+    },
+    { "id": 3, "module": "tools:iterator", "parameters": { "array": "{{2.rows}}" } },
+    {
+      "id": 4,
+      "module": "openai:chatCompletion",
+      "parameters": {
+        "model": "gpt-4.1-mini",
+        "temperature": 0.3
+      }
+    },
+    { "id": 5, "module": "tools:parseJson" },
+    {
+      "id": 6,
+      "module": "tools:createFile",
+      "parameters": {
+        "fileName": "SIGMENTUM_{{3.Asset}}_{{formatDate(now; \"YYYY-MM-DD_HH-mm\")}}.txt"
+      }
+    },
+    {
+      "id": 7,
+      "module": "google-drive:uploadFile"
+    },
+    {
+      "id": 8,
+      "module": "google-drive:getShareLink"
+    },
+    {
+      "id": 9,
+      "module": "telegram:sendMessage"
+    }
+  ]
+}

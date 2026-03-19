@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIGMENTUM Brand Concept</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #16183A;
+      color: #fff;
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 450px;
+      margin: 0 auto;
+    }
+    .term {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      margin-bottom: .2rem;
+      color: #42FFD7;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeInUp 1.1s 0.3s forwards;
+    }
+    .pronounce {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #3AB1FA;
+      margin-bottom: .5rem;
+      opacity: 0;
+      transform: translateX(-30px);
+      animation: fadeInLeft 1.1s 0.8s forwards;
+    }
+    .pos {
+      font-size: 1rem;
+      color: #FFA94D;
+      font-style: italic;
+      margin-bottom: .5rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s 1.1s forwards;
+    }
+    .def {
+      font-size: 1.1rem;
+      color: #BDBDBD;
+      margin-bottom: 1.2rem;
+      line-height: 1.4;
+      opacity: 0;
+      transform: scale(0.95);
+      animation: fadeIn 1s 1.6s forwards;
+    }
+    .bullet {
+      font-size: 2rem;
+      color: #FF7917;
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: scale(0.7);
+      animation: bulletIn 0.8s 2.1s forwards;
+    }
+    /* Second term styling */
+    .term2 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      margin-bottom: .2rem;
+      color: #13FF91;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeInUp 1.2s 2.5s forwards;
+    }
+    .pronounce2 {
+      font-size: 1.1rem;
+      font-style: italic;
+      color: #96FFF8;
+      margin-bottom: .5rem;
+      opacity: 0;
+      transform: translateX(-30px);
+      animation: fadeInLeft 1.1s 3.1s forwards;
+    }
+    .pos2 {
+      font-size: 1rem;
+      color: #FDCB6E;
+      font-style: italic;
+      margin-bottom: .5rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s 3.6s forwards;
+    }
+    .def2 {
+      font-size: 1.1rem;
+      color: #BDBDBD;
+      margin-bottom: 1.2rem;
+      line-height: 1.4;
+      opacity: 0;
+      transform: scale(0.95);
+      animation: fadeIn 1s 4s forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {opacity: 1; transform: translateY(0);}
+    }
+    @keyframes fadeInLeft {
+      to {opacity: 1; transform: translateX(0);}
+    }
+    @keyframes fadeIn {
+      to {opacity: 1; transform: scale(1);}
+    }
+    @keyframes bulletIn {
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    .brand-tag {
+      text-align: center;
+      font-size: 1rem;
+      margin-top: 2.4rem;
+      color: #49FFD6;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="term">sig·nal</div>
+  <div class="pronounce">/ˈsiɡn(ə)l/</div>
+  <div class="pos">noun</div>
+  <div class="def">A gesture, action, or sound that conveys information or instructions.</div>
+  <div class="bullet">&bull;</div>
+  <div class="term2">mo·men·tum</div>
+  <div class="pronounce2">/məˈmen.təm/</div>
+  <div class="pos2">noun</div>
+  <div class="def2">Force or speed of movement; impetus gained by a moving object.</div>
+  <div class="brand-tag">Where SIGNALS & MOMENTUM Meet</div>
+</div>
+</body>
+</html>
