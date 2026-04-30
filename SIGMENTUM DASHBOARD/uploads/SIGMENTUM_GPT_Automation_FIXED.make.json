@@ -1,0 +1,106 @@
+{
+  "name": "SIGMENTUM GPT Automation (FIXED)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-sheets:filterRows",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": 7659557
+      },
+      "mapper": {
+        "from": "drive",
+        "limit": 1,
+        "spreadsheetId": "19_J9DtVc6Tlb0RaX-tXbaNh1_scgwtHGYatFAlxuSkc",
+        "sheetId": "Historical Metrics",
+        "includesHeaders": true,
+        "tableFirstRow": "A1:Z1",
+        "orderBy": "date",
+        "sortOrder": "desc",
+        "valueRenderOption": "FORMATTED_VALUE",
+        "dateTimeRenderOption": "FORMATTED_STRING"
+      },
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "openai-gpt-3:CreateCompletion",
+      "version": 1,
+      "parameters": {
+        "__IMTCONN__": 7659734
+      },
+      "mapper": {
+        "select": "chat",
+        "model": "o4-mini",
+        "temperature": 0.3,
+        "top_p": 1,
+        "n_completions": 1,
+        "max_tokens": 350,
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are SIGMENTUM, an institutional-grade trading intelligence analyst.\n\nReturn ONLY valid JSON. No markdown, no labels, no extra text. The response must start with { and end with }.\n\nSchema:\n{\n  \"headline\": string,\n  \"bias\": \"Long\" | \"Short\" | \"Neutral\",\n  \"confidence\": integer,\n  \"ai_reasoning\": string,\n  \"risk_level\": \"Low\" | \"Moderate\" | \"High\",\n  \"risk_rationale\": string,\n  \"action_summary\": string\n}\n\nRules:\n- confidence must be an integer 0-100\n- ai_reasoning max 3 sentences\n- action_summary max 2 sentences\n- No extra fields"
+          },
+          {
+            "role": "user",
+            "content": "TECHNICAL DATA\nDate: {{1.`0`}}\nClose: {{1.`1`}}\nPercent Change: {{1.`2`}}\nEMA 9: {{1.`3`}}\nEMA 21: {{1.`4`}}\nRSI 14: {{1.`5`}}\nVolatility: {{1.`6`}}\nRange: {{1.`7`}}\n\nGenerate the JSON now."
+          }
+        ],
+        "response_format": "json_object",
+        "parseJSONResponse": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "advanced": true
+      }
+    },
+    {
+      "id": 10,
+      "module": "google-sheets:addRow",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": 7659557
+      },
+      "mapper": {
+        "mode": "select",
+        "from": "drive",
+        "spreadsheetId": "19_J9DtVc6Tlb0RaX-tXbaNh1_scgwtHGYatFAlxuSkc",
+        "sheetId": "GPT Output",
+        "includesHeaders": true,
+        "useColumnHeaders": true,
+        "insertDataOption": "INSERT_ROWS",
+        "valueInputOption": "USER_ENTERED",
+        "insertUnformatted": false,
+        "values": {
+          "date": "{{1.`0`}}",
+          "pair": "EUR/USD",
+          "summary": "{{2.result.ai_reasoning}}",
+          "forecast": "{{2.result.action_summary}}",
+          "pattern": "{{2.result.headline}}",
+          "signal": "{{2.result.bias}}",
+          "confidence": "{{2.result.confidence}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 775,
+          "y": -173
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": false,
+    "version": 1,
+    "zone": "us2.make.com",
+    "notes": []
+  }
+}

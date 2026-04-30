@@ -1,0 +1,334 @@
+{
+  "name": "SIGMENTUM — Webhook → OpenAI → Google Sheets (Minimal)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "webhooks:customWebhook",
+      "version": 1,
+      "parameters": {
+        "__IMTHOOK__": null
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": -600,
+          "y": 0
+        },
+        "parameters": [
+          {
+            "name": "__IMTHOOK__",
+            "type": "hook",
+            "label": "Webhook",
+            "required": true
+          }
+        ],
+        "restore": {
+          "parameters": {
+            "__IMTHOOK__": {
+              "label": "Create/select your webhook after import"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "util:SetMultipleVariables",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "variables": [
+          {
+            "name": "spreadsheet_id",
+            "scope": "execution",
+            "value": "19_J9DtVc6Tlb0RaX-tXbaNh1_scgwtHGYatFAlxuSkc"
+          },
+          {
+            "name": "sheet_name",
+            "scope": "execution",
+            "value": "Signals"
+          },
+          {
+            "name": "openai_model",
+            "scope": "execution",
+            "value": "gpt-4.1-mini"
+          },
+          {
+            "name": "openai_api_key",
+            "scope": "execution",
+            "value": "REPLACE_WITH_YOUR_OPENAI_API_KEY"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": -350,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "scope": {
+              "label": "Execution"
+            }
+          }
+        },
+        "expect": [
+          {
+            "name": "variables",
+            "type": "array",
+            "label": "Variables",
+            "spec": {
+              "type": "collection",
+              "spec": [
+                {
+                  "name": "name",
+                  "type": "text",
+                  "label": "Variable name",
+                  "required": true
+                },
+                {
+                  "name": "scope",
+                  "type": "select",
+                  "label": "Variable lifetime",
+                  "required": true,
+                  "validate": {
+                    "enum": [
+                      "roundtrip",
+                      "execution"
+                    ]
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": "any",
+                  "label": "Variable value"
+                }
+              ]
+            }
+          }
+        ],
+        "interface": [
+          {
+            "name": "spreadsheet_id",
+            "type": "text",
+            "label": "spreadsheet_id"
+          },
+          {
+            "name": "sheet_name",
+            "type": "text",
+            "label": "sheet_name"
+          },
+          {
+            "name": "openai_model",
+            "type": "text",
+            "label": "openai_model"
+          },
+          {
+            "name": "openai_api_key",
+            "type": "text",
+            "label": "openai_api_key"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {{2.openai_api_key}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "raw": "{\"model\": \"{{2.openai_model}}\", \"temperature\": 0.2, \"messages\": [{\"role\": \"system\", \"content\": \"You are SIGMENTUM, a trading assistant. Return concise, actionable trade analysis in plain text.\"}, {\"role\": \"user\", \"content\": \"{{1.prompt}}\"}]}"
+      },
+      "metadata": {
+        "designer": {
+          "x": -60,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "method": {
+              "label": "POST"
+            },
+            "bodyType": {
+              "label": "Raw"
+            }
+          }
+        },
+        "expect": [
+          {
+            "name": "url",
+            "type": "url",
+            "label": "URL",
+            "required": true
+          },
+          {
+            "name": "method",
+            "type": "select",
+            "label": "Method",
+            "required": true,
+            "validate": {
+              "enum": [
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE"
+              ]
+            }
+          },
+          {
+            "name": "headers",
+            "type": "array",
+            "label": "Headers",
+            "spec": {
+              "type": "collection",
+              "spec": [
+                {
+                  "name": "name",
+                  "type": "text",
+                  "label": "Header name",
+                  "required": true
+                },
+                {
+                  "name": "value",
+                  "type": "text",
+                  "label": "Header value",
+                  "required": true
+                }
+              ]
+            }
+          },
+          {
+            "name": "bodyType",
+            "type": "select",
+            "label": "Body type",
+            "validate": {
+              "enum": [
+                "raw",
+                "form",
+                "x-www-form-urlencoded",
+                "multipart"
+              ]
+            }
+          },
+          {
+            "name": "raw",
+            "type": "text",
+            "label": "Request content"
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "module": "json:ParseJSON",
+      "version": 1,
+      "parameters": {
+        "type": null
+      },
+      "mapper": {
+        "json": "{{3.data}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 200,
+          "y": 0
+        },
+        "restore": {
+          "parameters": {
+            "type": {
+              "label": "Choose a data structure"
+            }
+          }
+        },
+        "expect": [
+          {
+            "name": "json",
+            "type": "text",
+            "label": "JSON string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "module": "google-sheets:addRow",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": null
+      },
+      "mapper": {
+        "from": "drive",
+        "mode": "select",
+        "values": {
+          "0": "{{now}}",
+          "1": "{{1.prompt}}",
+          "2": "{{4.choices[0].message.content}}"
+        },
+        "sheetId": "{{2.sheet_name}}",
+        "spreadsheetId": "{{2.spreadsheet_id}}",
+        "includesHeaders": true,
+        "insertDataOption": "INSERT_ROWS",
+        "valueInputOption": "USER_ENTERED",
+        "insertUnformatted": false
+      },
+      "metadata": {
+        "designer": {
+          "x": 480,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "from": {
+              "label": "My Drive"
+            },
+            "mode": {
+              "label": "Select"
+            },
+            "includesHeaders": {
+              "label": "Yes"
+            },
+            "insertDataOption": {
+              "label": "Insert rows"
+            },
+            "valueInputOption": {
+              "label": "User entered"
+            }
+          },
+          "parameters": {
+            "__IMTCONN__": {
+              "label": "Select your Google Sheets connection after import"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "__IMTCONN__",
+            "type": "account:google",
+            "label": "Connection",
+            "required": true
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "instant": true,
+    "created_utc": "2026-03-03T02:17:56.718225Z"
+  }
+}
