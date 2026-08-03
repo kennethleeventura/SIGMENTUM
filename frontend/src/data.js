@@ -43,13 +43,39 @@ export const SIGNAL_FEED = [
 ];
 
 export const REASONING_STEPS = [
-  { tag: 'ingest',  text: 'Pulling OHLC, EMA-9, EMA-21, RSI-14, volatility, range from SIGNAL_LOG.' },
-  { tag: 'context', text: 'Cross-referencing prior 20 sessions. Volatility regime: compressing. Trend: constructive.' },
-  { tag: 'pattern', text: 'Detecting bullish continuation: EMA-9 > EMA-21, RSI 67 (not overbought), range expansion +14%.' },
-  { tag: 'risk',    text: 'DXY softening; CPI release in 36h increases event-risk. Sizing half-unit.' },
-  { tag: 'decide',  text: 'Bias: Long XAU/USD. Confidence 84. TP1 2358 / TP2 2372. SL 2329.80. R:R 2.9.' },
-  { tag: 'deliver', text: 'Writing row to GPT Output. Dispatching Telegram alert. Generating .txt memo.' },
+  {
+    tag: 'MARKET READ',
+    icon: '◎',
+    text: 'Gold is trending above both its short and long-term averages. EMA-9 (2338.4) is above EMA-21 (2331.8) — the short-term trend is leading the medium-term upward. Price has not closed below EMA-21 in 6 sessions.',
+  },
+  {
+    tag: 'PATTERN DETECTED',
+    icon: '◈',
+    text: 'Bullish continuation: 4H candle range expanded +14% above its 5-session average with RSI at 67 — in the momentum sweet spot, not yet overbought. No divergence between price and RSI at this high.',
+  },
+  {
+    tag: 'RISK ASSESSMENT',
+    icon: '⚠',
+    text: 'CPI release in 36 hours triggers an event-risk flag. Technical read is valid, but binary macro events can override structure. Position size is reduced by 50%. Stop is widened by 0.5× ATR to survive pre-event volatility.',
+  },
+  {
+    tag: 'CONVICTION CHECK',
+    icon: '◆',
+    text: '3 of 4 scoring inputs align bullish — Trend (88), Momentum (76), Volatility (62), Event Risk (55). The event overlay is the only drag. Final confidence: 84 — above the 80 high-conviction threshold.',
+  },
+  {
+    tag: 'TRADE DECISION',
+    icon: '→',
+    text: 'Long XAU/USD at market (2341.20). Take partial profit at TP1 (2358) and move stop to breakeven. Let the remainder run to TP2 (2372.40). Stop at 2329.80 — below the zone boundary. R:R: 2.9.',
+  },
 ];
+
+export const SIGNAL_FACTORS = {
+  trend:     { label: 'Trend Alignment',   score: 88, color: 'var(--green)',  icon: '↗', what: 'EMA-9 crossed above EMA-21 and price is trading above both averages. Short-term momentum is leading medium-term momentum upward.', impact: 'Bullish — adds conviction. Clean EMA alignment with no recent cross-back.', tip: 'Measures whether short and long-term moving averages point in the same direction as the signal bias. The greater the separation, the stronger the trend.' },
+  momentum:  { label: 'Momentum Quality',  score: 76, color: 'var(--green)',  icon: '⚡', what: 'RSI-14 is at 67 — in the momentum sweet spot (55–70). The move has energy but is not overbought. No bearish divergence at the current high.', impact: 'Bullish — ideal entry zone. RSI below 70 means there is still upside before exhaustion.', tip: 'Uses RSI to measure whether a move has energy. 55–70 is the ideal zone for new long entries — strong but with room to run before hitting overbought territory.' },
+  volatility:{ label: 'Volatility Regime', score: 62, color: 'var(--orange)', icon: '◈', what: 'ATR is expanding — candle range grew +14% vs the 5-session average. The market is becoming more active. Good for breakout follow-through, but demands a wider stop.', impact: 'Mixed — expanding volatility increases follow-through probability but stop distance.', tip: 'Tracks whether daily candle sizes are compressing (coiling for a move) or expanding (already in motion). Compressing = cleaner entries with tighter stops.' },
+  event:     { label: 'Event Risk',        score: 55, color: 'var(--orange)', icon: '⚠', what: 'CPI data releases in 36 hours. Binary macro events can move price beyond any technical level regardless of signal strength. Size is cut in half.', impact: 'Risk-negative — confidence capped at 75 on event weeks. Half-position sizing recommended.', tip: 'Measures proximity of major macro releases (CPI, NFP, FOMC). These events override technical structure. Sigmentum never issues full-size signals within 4 hours of a tier-1 event.' },
+};
 
 export const PIPELINE = [
   { id: 1, label: 'Scheduler',    sub: 'every 15 min',   tool: 'make.com',      status: 'ok',      ms: 12   },
