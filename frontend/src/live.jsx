@@ -39,62 +39,103 @@ function PopupCard({ n }) {
     const t = setTimeout(() => setVisible(true), 10);
     return () => clearTimeout(t);
   }, []);
-  const isBuy = n.kind === 'buy';
+  const isBuy  = n.kind === 'buy';
   const isSell = n.kind === 'sell';
+  const isUpd  = n.kind === 'update';
   const accent = isBuy ? 'var(--green)' : isSell ? 'var(--orange)' : 'var(--blue)';
-  const label = isBuy ? 'BUY SIGNAL' : isSell ? 'SELL SIGNAL' : 'UPDATE';
+  const accentRaw = isBuy ? '#0fb864' : isSell ? '#ee6a13' : '#0b5dee';
+  const label  = isBuy ? 'BUY SIGNAL' : isSell ? 'SELL SIGNAL' : 'POSITION UPDATE';
+  const arrow  = isBuy ? '▲' : isSell ? '▼' : '◆';
+
+  // Parse entry / TP / SL from body text for trade signals
+  const entryMatch = n.body.match(/Entry\s+([\d,\.]+)/i);
+  const tpMatch    = n.body.match(/TP1?\s+([\d,\.]+)/i);
+  const slMatch    = n.body.match(/SL\s+([\d,\.]+)/i);
 
   return (
     <div className="glass glass-strong" style={{
       pointerEvents: 'auto',
-      width: 340, padding: 14, borderRadius: 'var(--radius-lg)',
-      borderLeft: `3px solid ${accent}`,
-      boxShadow: `var(--shadow-lg), 0 0 0 1px ${accent}22, 0 0 32px -8px ${accent}44`,
+      width: 420, padding: '18px 20px', borderRadius: 'var(--radius-xl)',
+      borderLeft: `4px solid ${accent}`,
+      boxShadow: `var(--shadow-lg), 0 0 0 1px ${accentRaw}28, 0 0 48px -12px ${accentRaw}55`,
       opacity: visible ? 1 : 0,
       transform: visible ? 'translateX(0)' : 'translateX(calc(100% + 40px))',
       transition: 'opacity 400ms cubic-bezier(.2,.7,.2,1), transform 500ms cubic-bezier(.2,.7,.2,1)',
       position: 'relative', overflow: 'hidden',
     }}>
+      {/* Glow orb */}
       <div style={{
-        position: 'absolute', top: -20, left: -20,
-        width: 80, height: 80, borderRadius: '50%',
-        background: `radial-gradient(circle, ${accent}, transparent 70%)`,
-        opacity: 0.2, filter: 'blur(18px)', pointerEvents: 'none',
+        position: 'absolute', top: -30, left: -30,
+        width: 120, height: 120, borderRadius: '50%',
+        background: `radial-gradient(circle, ${accentRaw}, transparent 70%)`,
+        opacity: 0.18, filter: 'blur(24px)', pointerEvents: 'none',
       }}/>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, position: 'relative' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12, position: 'relative' }}>
         <span style={{
-          width: 28, height: 28, borderRadius: 8,
-          background: accent,
+          width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+          background: `linear-gradient(135deg, ${accentRaw}, ${accentRaw}bb)`,
+          boxShadow: `0 4px 14px ${accentRaw}44`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'white', fontSize: 14, fontWeight: 600,
-        }}>
-          {isBuy ? '▲' : isSell ? '▼' : '◆'}
-        </span>
-        <div style={{ flex: 1 }}>
-          <div className="eyebrow" style={{ fontSize: 9, color: accent, letterSpacing: '0.14em' }}>{label}</div>
-          <div className="mono" style={{ fontSize: 14, fontWeight: 600, marginTop: 2 }}>{n.asset} · conf {n.conf}</div>
+          color: 'white', fontSize: 20, fontWeight: 700,
+        }}>{arrow}</span>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 10, color: accent, fontFamily: 'var(--font-mono)', fontWeight: 600, letterSpacing: '0.14em', marginBottom: 3 }}>
+            {label}
+          </div>
+          <div className="mono" style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', lineHeight: 1 }}>
+            {n.asset}
+          </div>
         </div>
-        <LogoMark size={20}/>
+
+        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+          <div style={{ fontSize: 10, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)', marginBottom: 3 }}>CONFIDENCE</div>
+          <div className="mono" style={{ fontSize: 28, fontWeight: 700, color: accent, lineHeight: 1 }}>{n.conf}%</div>
+        </div>
       </div>
-      <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--ink-2)', marginBottom: 10 }}>
+
+      {/* Trade levels (if buy/sell) */}
+      {(isBuy || isSell) && (entryMatch || tpMatch || slMatch) && (
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 12,
+        }}>
+          {[
+            entryMatch && { label: 'ENTRY', value: entryMatch[1], col: 'var(--ink-2)' },
+            tpMatch    && { label: 'TP1',   value: tpMatch[1],    col: 'var(--green)' },
+            slMatch    && { label: 'SL',    value: slMatch[1],    col: 'var(--orange)' },
+          ].filter(Boolean).map((item) => (
+            <div key={item.label} style={{
+              padding: '8px 10px', borderRadius: 10,
+              background: 'var(--inner-card)', border: '1px solid var(--glass-stroke)',
+            }}>
+              <div style={{ fontSize: 9, color: 'var(--ink-5)', fontFamily: 'var(--font-mono)', marginBottom: 3 }}>{item.label}</div>
+              <div className="mono" style={{ fontSize: 13, fontWeight: 700, color: item.col }}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Body text */}
+      <div style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink-2)', marginBottom: 14 }}>
         {n.body}
       </div>
+
+      {/* Footer */}
       <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-        <span className="chip" style={{ fontSize: 9, padding: '2px 7px' }}>
-          <span style={{ fontSize: 9 }}>✉</span>
-          <span>EMAIL</span>
+        <span className="chip" style={{ fontSize: 10, padding: '3px 9px' }}>
+          <span>✉</span><span>EMAIL</span>
         </span>
-        <span className="chip" style={{ fontSize: 9, padding: '2px 7px' }}>
-          <span style={{ fontSize: 9 }}>◈</span>
-          <span>TELEGRAM</span>
+        <span className="chip" style={{ fontSize: 10, padding: '3px 9px' }}>
+          <span>◈</span><span>TELEGRAM</span>
         </span>
-        <span className="chip" style={{ fontSize: 9, padding: '2px 7px' }}>
+        <span className="chip" style={{ fontSize: 10, padding: '3px 9px' }}>
           <span className="chip-dot live" style={{ width: 5, height: 5 }}/>
           <span>SENT</span>
         </span>
         <div style={{ flex: 1 }}/>
-        <span className="mono" style={{ fontSize: 10, color: 'var(--ink-3)' }}>just now</span>
+        <LogoMark size={18}/>
       </div>
     </div>
   );
