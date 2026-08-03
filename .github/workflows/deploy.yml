@@ -5,6 +5,7 @@ on:
     branches: [main, claude/help-with-build-ujSHT]
   workflow_dispatch:
 
+
 permissions:
   contents: read
   pages: write
@@ -40,6 +41,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
