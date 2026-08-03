@@ -371,7 +371,13 @@ export function Telegram() {
   );
 }
 
+const CATS = ['All', 'Market Structure', 'Risk', 'Systems', 'Education', 'Psychology'];
+
 export function Learn() {
+  const [activePost, setActivePost] = useState(null);
+  const [cat, setCat] = useState('All');
+  const filtered = cat === 'All' ? BLOG_POSTS : BLOG_POSTS.filter(p => p.cat === cat);
+
   return (
     <section id="learn" className="container">
       <Reveal>
@@ -386,19 +392,29 @@ export function Learn() {
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 24, marginBottom: 48 }}>
         <Reveal>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div className="eyebrow">Automated journal</div>
-              <a href="#" style={{ fontSize: 13, color: 'var(--ink-2)', textDecoration: 'none' }}>All posts →</a>
+              <span className="mono" style={{ fontSize: 10, color: 'var(--ink-3)' }}>{filtered.length} ARTICLES</span>
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+              {CATS.map(c => (
+                <button key={c} onClick={() => setCat(c)} style={{
+                  padding: '4px 12px', borderRadius: 999, fontSize: 11, fontWeight: 500,
+                  border: cat === c ? '1px solid var(--orange)' : '1px solid var(--glass-stroke)',
+                  background: cat === c ? 'var(--orange)' : 'transparent',
+                  color: cat === c ? 'white' : 'var(--ink-2)',
+                  cursor: 'pointer', transition: 'all 160ms',
+                  fontFamily: 'var(--font-sans)',
+                }}>{c}</button>
+              ))}
             </div>
             <div style={{ display: 'grid', gap: 10 }}>
-              {BLOG_POSTS.map((p, i) => (
-                <Reveal key={i} delay={i * 60}>
-                  <a href="#" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+              {filtered.map((p, i) => (
+                <Reveal key={p.title} delay={i * 50}>
+                  <button onClick={() => setActivePost(p)} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
                     <div className="glass lift" style={{ padding: 18, borderRadius: 'var(--radius-lg)', position: 'relative', overflow: 'hidden' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 11 }}>
-                        <span className="chip">
-                          <span style={{ color: 'var(--orange)' }}>{p.cat}</span>
-                        </span>
+                        <span className="chip"><span style={{ color: 'var(--orange)' }}>{p.cat}</span></span>
                         <span className="mono" style={{ color: 'var(--ink-3)' }}>{p.read}</span>
                         <span className="chip" style={{ fontSize: 9 }}>
                           <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--green)', display: 'inline-block' }}/>
@@ -406,25 +422,20 @@ export function Learn() {
                         </span>
                         <span className="mono" style={{ color: 'var(--ink-3)', marginLeft: 'auto' }}>{p.date}</span>
                       </div>
-                      <div className="serif" style={{ fontSize: 22, lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 8 }}>
+                      <div className="serif" style={{ fontSize: 20, lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 8 }}>
                         {p.title}
                       </div>
                       {p.hook && (
-                        <div style={{
-                          fontSize: 13, fontStyle: 'italic',
-                          color: 'var(--ink-2)', margin: '0 0 8px',
-                          paddingLeft: 12, borderLeft: '2px solid var(--orange)',
-                          fontFamily: 'var(--font-serif)',
-                        }}>
+                        <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--ink-2)', margin: '0 0 8px', paddingLeft: 12, borderLeft: '2px solid var(--orange)', fontFamily: 'var(--font-serif)' }}>
                           "{p.hook}"
                         </div>
                       )}
                       <div style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.55 }}>{p.excerpt}</div>
                       <div style={{ marginTop: 12, fontSize: 11, color: 'var(--orange)', fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}>
-                        READ →
+                        READ FULL ARTICLE →
                       </div>
                     </div>
-                  </a>
+                  </button>
                 </Reveal>
               ))}
             </div>
@@ -441,12 +452,91 @@ export function Learn() {
               </span>
             </div>
             <div className="glass" style={{ padding: 8, borderRadius: 'var(--radius-lg)' }}>
-              {GLOSSARY.map((g, i) => <GlossaryItem key={i} entry={g} delay={i * 60}/>)}
+              {GLOSSARY.map((g, i) => <GlossaryItem key={i} entry={g} delay={i * 40}/>)}
             </div>
           </div>
         </Reveal>
       </div>
+
+      {activePost && <ArticleModal post={activePost} onClose={() => setActivePost(null)}/>}
     </section>
+  );
+}
+
+function ArticleModal({ post, onClose }) {
+  const accent = 'var(--orange)';
+  const paragraphs = post.body.split('\n\n').filter(Boolean);
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 200,
+      background: 'rgba(5,7,12,0.82)', backdropFilter: 'blur(12px)',
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+      padding: '60px 20px 40px', overflowY: 'auto',
+    }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="glass glass-strong" style={{
+        width: '100%', maxWidth: 760, borderRadius: 'var(--radius-xl)',
+        padding: '40px 48px', position: 'relative',
+        border: '1px solid var(--glass-stroke)',
+        boxShadow: 'var(--shadow-lg)',
+      }}>
+        <button onClick={onClose} style={{
+          position: 'absolute', top: 20, right: 20,
+          width: 36, height: 36, borderRadius: '50%',
+          background: 'var(--inner-card)', border: '1px solid var(--glass-stroke)',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 18, color: 'var(--ink-2)',
+        }}>×</button>
+
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 20 }}>
+          <span className="chip"><span style={{ color: accent }}>{post.cat}</span></span>
+          <span className="mono" style={{ fontSize: 10, color: 'var(--ink-3)' }}>{post.read}</span>
+          <span className="chip" style={{ fontSize: 9 }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--green)', display: 'inline-block' }}/>
+            <span>AUTO-GENERATED</span>
+          </span>
+          <span className="mono" style={{ fontSize: 10, color: 'var(--ink-3)', marginLeft: 'auto' }}>{post.date}</span>
+        </div>
+
+        <h2 className="serif" style={{ fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 500, lineHeight: 1.1, letterSpacing: '-0.015em', margin: '0 0 16px' }}>
+          {post.title}
+        </h2>
+
+        {post.hook && (
+          <div style={{
+            fontSize: 15, fontStyle: 'italic', color: 'var(--ink-2)',
+            padding: '14px 18px', borderLeft: `3px solid ${accent}`,
+            background: `${accent}0d`, borderRadius: '0 8px 8px 0',
+            fontFamily: 'var(--font-serif)', lineHeight: 1.5, marginBottom: 28,
+          }}>
+            "{post.hook}"
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {paragraphs.map((para, i) => {
+            if (para.startsWith('**') && para.endsWith('**')) {
+              return <h3 key={i} style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', margin: 0, letterSpacing: '-0.01em' }}>{para.replace(/\*\*/g, '')}</h3>;
+            }
+            const parts = para.split(/(\*\*[^*]+\*\*)/g);
+            return (
+              <p key={i} style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--ink-2)', margin: 0 }}>
+                {parts.map((part, j) =>
+                  part.startsWith('**') ? <strong key={j} style={{ color: 'var(--ink)', fontWeight: 600 }}>{part.replace(/\*\*/g, '')}</strong> : part
+                )}
+              </p>
+            );
+          })}
+        </div>
+
+        <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--glass-stroke)', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <LogoMark size={22}/>
+          <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>Generated by SIGMENTUM AI · {post.date}</span>
+          <div style={{ flex: 1 }}/>
+          <button onClick={onClose} className="btn btn-signal" style={{ padding: '8px 20px', fontSize: 13 }}>Close</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
