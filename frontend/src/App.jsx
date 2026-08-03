@@ -3,6 +3,7 @@ import { ScrollProgress } from './primitives';
 import { Nav, Ticker, Hero } from './sections-a';
 import { SignalFeed, AIReasoning, ActiveTrade } from './sections-b';
 import { RiskDashboard, Pipeline, Performance, Telegram, Learn, Footer } from './sections-c';
+import { HindsightSandbox, Pricing } from './sections-d';
 import { PopupNotifier } from './live';
 import { useTweaks } from './tweaks-panel';
 import { SigmentumTweaks, applyTweaks } from './tweaks';
@@ -33,8 +34,10 @@ export default function App() {
       <AIReasoning/>
       <RiskDashboard/>
       <Pipeline/>
+      <HindsightSandbox/>
       <Performance/>
       <Telegram/>
+      <Pricing/>
       <Learn/>
       <Footer/>
       <PopupNotifier/>

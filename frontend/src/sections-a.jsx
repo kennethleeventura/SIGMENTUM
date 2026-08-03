@@ -11,12 +11,11 @@ export function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   const links = [
-    { href: '#signals', label: 'Signals' },
-    { href: '#trade', label: 'Trade' },
-    { href: '#reasoning', label: 'AI Reasoning' },
-    { href: '#risk', label: 'Risk' },
-    { href: '#pipeline', label: 'Pipeline' },
-    { href: '#learn', label: 'Learn' },
+    { href: '#signals',  label: 'Signals'   },
+    { href: '#trade',    label: 'Trade'     },
+    { href: '#sandbox',  label: 'Sandbox'   },
+    { href: '#pricing',  label: 'Pricing'   },
+    { href: '#learn',    label: 'Learn'     },
   ];
 
   return (
@@ -208,8 +207,8 @@ export function Hero() {
             <Reveal delay={100}>
               <h1 style={{
                 fontFamily: 'var(--font-serif)',
-                fontSize: 'clamp(42px, 5.4vw, 82px)',
-                fontWeight: 500,
+                fontSize: 'clamp(44px, 5.6vw, 86px)',
+                fontWeight: 700,
                 lineHeight: 1.05,
                 letterSpacing: '-0.02em',
                 margin: '0 0 24px',
