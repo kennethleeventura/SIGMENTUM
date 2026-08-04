@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMobile } from './primitives';
+import { useAccount } from './sections-e';
 
 const SANDBOX_ASSETS = [
   { sym: 'XAU/USD', label: 'Gold Spot',     cls: 'COMMODITIES' },
@@ -179,6 +180,7 @@ function downloadCard(results, assetSym, ruleName) {
 
 export function HindsightSandbox() {
   const isMobile = useMobile();
+  const { openAuth } = useAccount();
   const [asset, setAsset] = useState(SANDBOX_ASSETS[0]);
   const [rule, setRule] = useState(SANDBOX_RULES[0]);
   const [direction, setDirection] = useState('long');
@@ -522,6 +524,7 @@ const TIERS = [
 
 export function Pricing() {
   const isMobile = useMobile();
+  const { openCheckout, openAuth } = useAccount();
   return (
     <section id="pricing" className="container">
       <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -577,10 +580,10 @@ export function Pricing() {
               ))}
             </div>
 
-            <a href="#" className={tier.ctaCls}
-              style={{ display: 'flex', justifyContent: 'center', textDecoration: 'none' }}>
+            <button onClick={() => openCheckout(tier)} className={tier.ctaCls}
+              style={{ display: 'flex', justifyContent: 'center', width: '100%', cursor: 'pointer' }}>
               {tier.cta}
-            </a>
+            </button>
           </div>
         ))}
       </div>

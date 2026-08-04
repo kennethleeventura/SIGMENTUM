@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { ASSETS, HERO_SIGNAL, CANDLES, buildSpark } from './data';
 import { LogoMark, Wordmark, Sparkline, ConfidenceRing, BiasBadge, CountUp, Waveform, Reveal, useParallax, useMobile } from './primitives';
+import { useAccount } from './sections-e';
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const isMobile = useMobile();
+  const { account, openAuth, openAccount } = useAccount();
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -59,9 +61,31 @@ export function Nav() {
             ))}
           </div>
           <div style={{ width: 1, height: 24, background: 'var(--line-strong)' }}/>
-          <a className="btn btn-primary" href="#" style={{ padding: '9px 16px', fontSize: 14 }}>
-            Open terminal →
-          </a>
+          {account ? (
+            <button onClick={openAccount} style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '7px 14px',
+              borderRadius: 999, border: '1px solid var(--glass-stroke)',
+              background: 'var(--inner-card)', cursor: 'pointer', transition: 'all 150ms',
+              fontFamily: 'var(--font-sans)',
+            }}
+            onMouseEnter={e => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
+            onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+            >
+              <span style={{
+                width: 24, height: 24, borderRadius: '50%',
+                background: account.plan === 'momentum' ? 'var(--green)' : account.plan === 'signal' ? 'var(--orange)' : 'var(--ink-4)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 11, fontWeight: 700, color: 'white',
+              }}>{account.email?.[0]?.toUpperCase()}</span>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>
+                {account.plan === 'free' ? 'Free' : account.plan === 'signal' ? 'Signal' : 'Momentum'}
+              </span>
+            </button>
+          ) : (
+            <button onClick={() => openAuth('signup')} className="btn btn-signal" style={{ padding: '9px 16px', fontSize: 14 }}>
+              Start free →
+            </button>
+          )}
         </>}
 
         {isMobile && (
@@ -98,10 +122,27 @@ export function Nav() {
             >{l.label}</a>
           ))}
           <div style={{ padding: '8px 8px 0', borderTop: '1px solid var(--glass-stroke)', marginTop: 8 }}>
-            <a className="btn btn-primary" href="#"
-              style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
-              Open terminal →
-            </a>
+            {account ? (
+              <button onClick={() => { setOpen(false); openAccount(); }} style={{
+                width: '100%', padding: '12px', borderRadius: 12,
+                border: '1px solid var(--glass-stroke)', background: 'var(--inner-card)',
+                cursor: 'pointer', fontSize: 14, fontFamily: 'var(--font-sans)',
+                display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ink)',
+              }}>
+                <span style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: account.plan === 'momentum' ? 'var(--green)' : account.plan === 'signal' ? 'var(--orange)' : 'var(--ink-4)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 12, fontWeight: 700, color: 'white', flexShrink: 0,
+                }}>{account.email?.[0]?.toUpperCase()}</span>
+                <span style={{ fontWeight: 500 }}>{account.email}</span>
+              </button>
+            ) : (
+              <button onClick={() => { setOpen(false); openAuth('signup'); }}
+                className="btn btn-signal" style={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
+                Start free →
+              </button>
+            )}
           </div>
         </div>
       )}
