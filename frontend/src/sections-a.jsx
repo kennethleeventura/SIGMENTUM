@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { ASSETS, HERO_SIGNAL, CANDLES, buildSpark } from './data';
-import { LogoMark, Wordmark, Sparkline, ConfidenceRing, BiasBadge, CountUp, Waveform, Reveal, useParallax } from './primitives';
+import { LogoMark, Wordmark, Sparkline, ConfidenceRing, BiasBadge, CountUp, Waveform, Reveal, useParallax, useMobile } from './primitives';
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const isMobile = useMobile();
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -21,41 +23,88 @@ export function Nav() {
   return (
     <div style={{
       position: 'fixed', top: 16, left: 0, right: 0, zIndex: 50,
-      display: 'flex', justifyContent: 'center',
-      pointerEvents: 'none',
+      display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center',
+      pointerEvents: 'none', padding: '0 16px',
     }}>
       <nav className="glass glass-strong" style={{
         pointerEvents: 'auto',
-        display: 'flex', alignItems: 'center', gap: 28,
-        padding: '14px 18px 14px 22px',
+        display: 'flex', alignItems: 'center',
+        gap: isMobile ? 0 : 28,
+        justifyContent: 'space-between',
+        padding: isMobile ? '10px 14px 10px 16px' : '14px 18px 14px 22px',
         borderRadius: 999,
+        width: isMobile ? '100%' : 'auto',
+        maxWidth: isMobile ? 500 : 'none',
         transition: 'all 300ms ease',
         boxShadow: scrolled ? 'var(--shadow-lg)' : 'var(--shadow-md)',
       }}>
-        <a href="#top" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-          <LogoMark size={40}/>
-          <Wordmark size={26}/>
+        <a href="#top" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <LogoMark size={isMobile ? 32 : 40}/>
+          <Wordmark size={isMobile ? 22 : 26}/>
         </a>
-        <div style={{ width: 1, height: 24, background: 'var(--line-strong)' }}/>
-        <div style={{ display: 'flex', gap: 4 }}>
+
+        {!isMobile && <>
+          <div style={{ width: 1, height: 24, background: 'var(--line-strong)' }}/>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {links.map((l) => (
+              <a key={l.href} href={l.href} style={{
+                padding: '8px 14px', borderRadius: 999,
+                fontSize: 14, fontWeight: 500,
+                color: 'var(--ink)', textDecoration: 'none',
+                transition: 'all 150ms', opacity: 0.85,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--blue-glow)'; e.currentTarget.style.opacity = '1'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.opacity = '0.85'; }}
+              >{l.label}</a>
+            ))}
+          </div>
+          <div style={{ width: 1, height: 24, background: 'var(--line-strong)' }}/>
+          <a className="btn btn-primary" href="#" style={{ padding: '9px 16px', fontSize: 14 }}>
+            Open terminal →
+          </a>
+        </>}
+
+        {isMobile && (
+          <button onClick={() => setOpen(o => !o)} style={{
+            width: 40, height: 40, borderRadius: 10,
+            background: open ? 'var(--ink)' : 'var(--inner-card)',
+            border: '1px solid var(--glass-stroke)',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, color: open ? 'var(--paper)' : 'var(--ink)', flexShrink: 0,
+            transition: 'all 200ms',
+          }}>
+            {open ? '✕' : '☰'}
+          </button>
+        )}
+      </nav>
+
+      {isMobile && open && (
+        <div className="glass glass-strong" style={{
+          pointerEvents: 'auto', marginTop: 8,
+          width: '100%', maxWidth: 500,
+          borderRadius: 20, padding: '12px 8px',
+          boxShadow: 'var(--shadow-lg)',
+        }}>
           {links.map((l) => (
-            <a key={l.href} href={l.href} style={{
-              padding: '8px 14px', borderRadius: 999,
-              fontSize: 14, fontWeight: 500,
-              color: 'var(--ink)', textDecoration: 'none',
-              transition: 'all 150ms',
-              opacity: 0.85,
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--blue-glow)'; e.currentTarget.style.opacity = '1'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.opacity = '0.85'; }}
+            <a key={l.href} href={l.href}
+              onClick={() => setOpen(false)}
+              style={{
+                display: 'block', padding: '12px 16px',
+                borderRadius: 12, fontSize: 15, fontWeight: 500,
+                color: 'var(--ink)', textDecoration: 'none', transition: 'all 150ms',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--inner-card)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
             >{l.label}</a>
           ))}
+          <div style={{ padding: '8px 8px 0', borderTop: '1px solid var(--glass-stroke)', marginTop: 8 }}>
+            <a className="btn btn-primary" href="#"
+              style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
+              Open terminal →
+            </a>
+          </div>
         </div>
-        <div style={{ width: 1, height: 24, background: 'var(--line-strong)' }}/>
-        <a className="btn btn-primary" href="#" style={{ padding: '9px 16px', fontSize: 14 }}>
-          Open terminal →
-        </a>
-      </nav>
+      )}
     </div>
   );
 }
@@ -339,9 +388,10 @@ export function CandleChart({ candles: defaultCandles, width = 520, height = 220
 export function Hero() {
   const parallaxOrb1 = useParallax(0.4);
   const parallaxOrb2 = useParallax(0.25);
+  const isMobile = useMobile();
 
   return (
-    <section id="top" style={{ paddingTop: 180, paddingBottom: 60, position: 'relative' }}>
+    <section id="top" style={{ paddingTop: isMobile ? 120 : 180, paddingBottom: 60, position: 'relative' }}>
       <div ref={parallaxOrb1} style={{
         position: 'absolute', top: 60, left: '8%',
         width: 280, height: 280, borderRadius: '50%',
@@ -356,7 +406,7 @@ export function Hero() {
       }}/>
 
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 48, alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.05fr 1fr', gap: isMobile ? 32 : 48, alignItems: 'center' }}>
 
           <div>
             <Reveal delay={0}>
@@ -409,7 +459,8 @@ export function Hero() {
             <Reveal delay={400}>
               <div style={{
                 display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8,
-                paddingTop: 24, borderTop: '1px solid var(--line)', maxWidth: 520,
+                paddingTop: 24, borderTop: '1px solid var(--line)',
+                maxWidth: isMobile ? '100%' : 520,
               }}>
                 {[
                   { k: 'Win rate', v: '68.4%' },
@@ -486,7 +537,7 @@ function LiveSignalCard() {
         <CandleChart candles={CANDLES} width={520} height={180}/>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 20 }}>
         {[
           { k: 'Entry', v: s.entry, col: 'var(--ink-2)' },
           { k: 'TP1',   v: s.tp1,   col: 'var(--green)' },

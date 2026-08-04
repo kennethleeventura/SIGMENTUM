@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMobile } from './primitives';
 
 const SANDBOX_ASSETS = [
   { sym: 'XAU/USD', label: 'Gold Spot',     cls: 'COMMODITIES' },
@@ -177,6 +178,7 @@ function downloadCard(results, assetSym, ruleName) {
 }
 
 export function HindsightSandbox() {
+  const isMobile = useMobile();
   const [asset, setAsset] = useState(SANDBOX_ASSETS[0]);
   const [rule, setRule] = useState(SANDBOX_RULES[0]);
   const [direction, setDirection] = useState('long');
@@ -220,9 +222,9 @@ export function HindsightSandbox() {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: everRan ? '1fr 1.45fr' : '1fr',
+        gridTemplateColumns: (everRan && !isMobile) ? '1fr 1.45fr' : '1fr',
         gap: 28,
-        maxWidth: everRan ? 1100 : 660,
+        maxWidth: (everRan && !isMobile) ? 1100 : isMobile ? '100%' : 660,
         margin: '0 auto',
         transition: 'max-width 500ms cubic-bezier(.2,.7,.2,1)',
       }}>
@@ -378,7 +380,7 @@ export function HindsightSandbox() {
                 </div>
 
                 {/* 4 metric tiles */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 22 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 22 }}>
                   {[
                     { label: 'Win Rate', value: results.winRate + '%', col: 'var(--green)' },
                     { label: 'Net P&L',  value: '+' + results.netPnl + '%', col: 'var(--green)' },
@@ -519,6 +521,7 @@ const TIERS = [
 ];
 
 export function Pricing() {
+  const isMobile = useMobile();
   return (
     <section id="pricing" className="container">
       <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -538,7 +541,7 @@ export function Pricing() {
       </div>
 
       <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+        display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
         gap: 20, maxWidth: 1000, margin: '0 auto',
       }}>
         {TIERS.map((tier) => (

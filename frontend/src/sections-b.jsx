@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SIGNAL_FEED, REASONING_STEPS, SIGNAL_FACTORS, HERO_SIGNAL, CANDLES, buildSpark } from './data';
-import { BiasBadge, ConfidenceBar, Sparkline, Reveal, Typewriter, CountUp, LogoMark, Waveform } from './primitives';
+import { BiasBadge, ConfidenceBar, Sparkline, Reveal, Typewriter, CountUp, LogoMark, Waveform, useMobile } from './primitives';
 import { CandleChart } from './sections-a';
 
 function Tip({ text, children }) {
@@ -36,6 +36,7 @@ export function SignalFeed() {
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(null);
   const [alertSignal, setAlertSignal] = useState(null);
+  const isMobile = useMobile();
 
   const filtered = filter === 'all' ? SIGNAL_FEED
     : SIGNAL_FEED.filter(s => {
@@ -73,32 +74,47 @@ export function SignalFeed() {
 
       <Reveal>
         <div className="glass" style={{ padding: 8, borderRadius: 'var(--radius-lg)' }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '70px 120px 130px 1fr 130px 80px 90px 100px',
-            padding: '12px 16px', fontSize: 11, fontFamily: 'var(--font-mono)',
-            letterSpacing: '0.1em', color: 'var(--ink-3)', textTransform: 'uppercase',
-            borderBottom: '1px solid var(--glass-stroke)',
-          }}>
-            <div>Time</div>
-            <div>Asset</div>
-            <Tip text="Long = AI recommends buying. Short = selling. Neutral = wait — do not trade."><div style={{ borderBottom: '1px dashed var(--ink-3)', display: 'inline-block', cursor: 'help' }}>Bias ⓘ</div></Tip>
-            <Tip text="0–100 score reflecting agreement across trend, momentum, volatility, and event-risk inputs. 70+ = tradable. 80+ = high conviction."><div style={{ borderBottom: '1px dashed var(--ink-3)', display: 'inline-block', cursor: 'help' }}>Confidence ⓘ</div></Tip>
-            <div>Trend</div>
-            <div style={{ textAlign: 'right' }}>%</div>
-            <div style={{ textAlign: 'right' }}>Status</div>
-            <div style={{ textAlign: 'right' }}>Action</div>
-          </div>
-
-          {filtered.map((s, i) => (
-            <SignalRow
-              key={s.t + s.asset}
-              s={s} i={i}
-              expanded={expanded === i}
-              onExpand={() => setExpanded(expanded === i ? null : i)}
-              onAlert={() => setAlertSignal(s)}
-            />
-          ))}
+          {isMobile ? (
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {filtered.map((s, i) => (
+                <SignalCard
+                  key={s.t + s.asset}
+                  s={s} i={i}
+                  expanded={expanded === i}
+                  onExpand={() => setExpanded(expanded === i ? null : i)}
+                  onAlert={() => setAlertSignal(s)}
+                />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '70px 120px 130px 1fr 130px 80px 90px 100px',
+                padding: '12px 16px', fontSize: 11, fontFamily: 'var(--font-mono)',
+                letterSpacing: '0.1em', color: 'var(--ink-3)', textTransform: 'uppercase',
+                borderBottom: '1px solid var(--glass-stroke)',
+              }}>
+                <div>Time</div>
+                <div>Asset</div>
+                <Tip text="Long = AI recommends buying. Short = selling. Neutral = wait — do not trade."><div style={{ borderBottom: '1px dashed var(--ink-3)', display: 'inline-block', cursor: 'help' }}>Bias ⓘ</div></Tip>
+                <Tip text="0–100 score reflecting agreement across trend, momentum, volatility, and event-risk inputs. 70+ = tradable. 80+ = high conviction."><div style={{ borderBottom: '1px dashed var(--ink-3)', display: 'inline-block', cursor: 'help' }}>Confidence ⓘ</div></Tip>
+                <div>Trend</div>
+                <div style={{ textAlign: 'right' }}>%</div>
+                <div style={{ textAlign: 'right' }}>Status</div>
+                <div style={{ textAlign: 'right' }}>Action</div>
+              </div>
+              {filtered.map((s, i) => (
+                <SignalRow
+                  key={s.t + s.asset}
+                  s={s} i={i}
+                  expanded={expanded === i}
+                  onExpand={() => setExpanded(expanded === i ? null : i)}
+                  onAlert={() => setAlertSignal(s)}
+                />
+              ))}
+            </>
+          )}
         </div>
       </Reveal>
 
@@ -117,6 +133,59 @@ const SIGNAL_INSIGHTS = {
   'WTI':     'OPEC supply narrative bearish. Price below both EMAs. Short thesis intact while RSI remains below 50.',
   'ETH/USD': 'Following BTC momentum with slight lag. Volume confirming. Watch for BTC confirmation first.',
 };
+
+function SignalCard({ s, i, expanded, onExpand, onAlert }) {
+  const insight = SIGNAL_INSIGHTS[s.asset] || 'Monitoring for confirmation. Check back on next 15-minute cycle.';
+  const isUp = s.pct >= 0;
+  return (
+    <div style={{ borderBottom: '1px solid var(--glass-stroke)' }}>
+      <div style={{
+        padding: '14px 12px', cursor: 'pointer',
+        background: expanded ? 'var(--inner-card)' : 'transparent',
+        borderRadius: expanded ? '8px 8px 0 0' : 8,
+        transition: 'background 150ms',
+      }} onClick={onExpand}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span className="mono" style={{ fontSize: 14, fontWeight: 600 }}>{s.asset}</span>
+            <BiasBadge bias={s.bias}/>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <StatusPill status={s.status}/>
+            <span className="mono" style={{ fontSize: 11, color: 'var(--ink-3)' }}>{expanded ? '▲' : '▼'}</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ flex: 1, maxWidth: 200 }}>
+            <ConfidenceBar value={s.conf} color={s.bias === 'Short' ? 'var(--orange)' : 'var(--green)'}/>
+          </div>
+          <span className="mono" style={{ fontSize: 13, color: isUp ? 'var(--green)' : 'var(--orange)', fontWeight: 500 }}>
+            {isUp ? '+' : ''}{s.pct.toFixed(2)}%
+          </span>
+          <span className="mono" style={{ fontSize: 11, color: 'var(--ink-4)' }}>{s.t}</span>
+        </div>
+      </div>
+      {expanded && (
+        <div style={{
+          padding: '12px 12px 16px', background: 'var(--inner-card)',
+          borderRadius: '0 0 8px 8px', borderBottom: '1px solid var(--glass-stroke)',
+        }}>
+          <p style={{ margin: '0 0 10px', fontSize: 13, lineHeight: 1.6, color: 'var(--ink-2)' }}>{insight}</p>
+          <div style={{ display: 'flex', gap: 12, fontSize: 12, color: 'var(--ink-3)', fontFamily: 'var(--font-mono)', marginBottom: 12, flexWrap: 'wrap' }}>
+            {s.entry && <span>Entry <strong style={{ color: 'var(--ink)' }}>{s.entry}</strong></span>}
+            {s.tp1   && <span>TP1 <strong style={{ color: 'var(--green)' }}>{s.tp1}</strong></span>}
+            {s.sl    && <span>SL <strong style={{ color: 'var(--orange)' }}>{s.sl}</strong></span>}
+            {s.rr    && <span>R:R <strong style={{ color: 'var(--ink)' }}>{s.rr}</strong></span>}
+          </div>
+          <button onClick={e => { e.stopPropagation(); onAlert(); }}
+            className="btn btn-signal" style={{ width: '100%', justifyContent: 'center', padding: '9px 18px', fontSize: 13 }}>
+            + Set Alert
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function SignalRow({ s, i, expanded, onExpand, onAlert }) {
   const insight = SIGNAL_INSIGHTS[s.asset] || 'Monitoring for confirmation. Check back on next 15-minute cycle.';
@@ -296,11 +365,12 @@ function StatusPill({ status }) {
 export function AIReasoning() {
   const factors = Object.values(SIGNAL_FACTORS);
   const overall = Math.round(factors.reduce((a, f) => a + f.score, 0) / factors.length);
+  const isMobile = useMobile();
 
   return (
     <section id="reasoning" className="container">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 56, alignItems: 'start' }}>
-        <div style={{ position: 'sticky', top: 120 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.2fr', gap: isMobile ? 32 : 56, alignItems: 'start' }}>
+        <div style={{ position: isMobile ? 'static' : 'sticky', top: 120 }}>
           <Reveal>
             <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--orange)' }}>02 · AI REASONING</div>
           </Reveal>
@@ -483,6 +553,7 @@ export function ActiveTrade() {
   const [riskExpanded, setRiskExpanded] = useState(false);
   const [maxLoss, setMaxLoss] = useState(2);
   const [minRR, setMinRR] = useState(1.8);
+  const isMobile = useMobile();
 
   return (
     <section id="trade" className="container">
@@ -497,15 +568,15 @@ export function ActiveTrade() {
 
       <Reveal>
         <div className="glass" style={{ padding: 28, borderRadius: 'var(--radius-xl)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 28 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.4fr 1fr', gap: 28 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', marginBottom: 16, flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 10 : 0 }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div className="mono" style={{ fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em' }}>XAU/USD</div>
+                    <div className="mono" style={{ fontSize: isMobile ? 22 : 28, fontWeight: 600, letterSpacing: '-0.02em' }}>XAU/USD</div>
                     <BiasBadge bias="Long" confidence={84}/>
                   </div>
-                  <div className="mono" style={{ fontSize: 13, color: 'var(--ink-3)', marginTop: 2 }}>Gold Spot · 4H · Signal #24,814</div>
+                  <div className="mono" style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2 }}>Gold Spot · 4H · Signal #24,814</div>
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
                   {['1H', '4H', '1D', '1W'].map((t) => (
@@ -523,7 +594,7 @@ export function ActiveTrade() {
                 <CandleChart candles={CANDLES} width={640} height={280}/>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginTop: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 10, marginTop: 16 }}>
                 {[
                   { k: 'EMA 9',  v: '2338.4', d: '+0.12%', col: 'var(--green)',  tip: 'EMA-9 is above EMA-21 — short-term momentum is leading long-term momentum upward. This is the primary trend alignment signal.' },
                   { k: 'EMA 21', v: '2331.8', d: '+0.07%', col: 'var(--green)',  tip: 'The 21-period EMA tracks medium-term trend direction. Price above both EMAs = bullish structure intact.' },

@@ -24,9 +24,10 @@ export function PopupNotifier() {
 
   return (
     <div style={{
-      position: 'fixed', top: 100, right: 20, zIndex: 60,
+      position: 'fixed', top: 80, right: 12, zIndex: 60,
       display: 'flex', flexDirection: 'column', gap: 10,
       pointerEvents: 'none',
+      maxWidth: 'calc(100vw - 24px)',
     }}>
       {queue.map((n) => <PopupCard key={n.uid} n={n}/>)}
     </div>
@@ -55,7 +56,7 @@ function PopupCard({ n }) {
   return (
     <div className="glass glass-strong" style={{
       pointerEvents: 'auto',
-      width: 420, padding: '18px 20px', borderRadius: 'var(--radius-xl)',
+      width: 'min(420px, calc(100vw - 24px))', padding: '14px 16px', borderRadius: 'var(--radius-xl)',
       borderLeft: `4px solid ${accent}`,
       boxShadow: `var(--shadow-lg), 0 0 0 1px ${accentRaw}28, 0 0 48px -12px ${accentRaw}55`,
       opacity: visible ? 1 : 0,
