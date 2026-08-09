@@ -148,22 +148,26 @@ Delete the `aggregateRating` block until there are real reviews to point at. Eve
 Merged from the Claude Code build work and the Cowork growth plan. **Strict order — each tier depends on the one above it.**
 
 ### Tier 0 — Unblock (do first, nothing else matters)
-1. Merge `claude/help-with-build-ujSHT` → `main`. Fixes CI, ships auth + checkout + paper wallet + mobile pass.
-2. Delete the `aggregateRating` block from `index.html`.
+1. ~~Merge `claude/help-with-build-ujSHT` → `main`. Fixes CI, ships auth + checkout + paper wallet + mobile pass.~~ **BLOCKED: PR #25 still draft — Kenneth must un-draft then merge.**
+2. ✅ Delete the `aggregateRating` block from `index.html`. Done on branch; ships when PR #25 merges.
 3. Rotate the Firebase service-account key if not already done.
-4. **Decide the architecture** (§4). Everything below Tier 1 is blocked on this.
+4. ✅ **Architecture decided:** Astro SSG for content routes (`sigmentum.com`), React SPA stays as dashboard at `/app/`. Cloudflare Pages as deploy target (blocked on Kenneth).
 
 ### Tier 1 — Make the site indexable
-5. Implement the chosen routing/SSG approach.
-6. Add `sitemap.xml` and `robots.txt` to `frontend/public/`.
-7. Move blog posts and glossary terms out of `data.js` onto real routes: `/learn/{slug}`, `/glossary/{term}`.
-8. Per-route `<title>`, meta description, canonical, and JSON-LD.
-9. Connect Google Search Console; submit the sitemap.
+5. ✅ Astro 4 SSG scaffolded in `astro/`. Static output, `site: 'https://sigmentum.com'`, trailing-slash: never.
+6. ✅ `@astrojs/sitemap` integrated in `astro.config.mjs`. `astro/public/robots.txt` created pointing at `sitemap-index.xml`.
+7. ✅ Glossary on real routes: `/glossary` index + `/glossary/{slug}` detail pages (30 terms). Blog/learn routes: pending.
+8. ✅ Per-route `<title>`, meta description, canonical, and JSON-LD on all Astro pages.
+9. Connect Google Search Console; submit the sitemap. **Blocked on Cloudflare deploy.**
+
+### Tier 1 (continued) — Landing page
+- ✅ `astro/src/pages/index.astro` — hero, features, pricing (2882 tiers $0/$28/$82), SoftwareApplication + Offer JSON-LD, UTMs on all CTAs.
+- ✅ `noindex` added to React SPA (`frontend/index.html`) so it doesn't compete with Astro landing.
 
 ### Tier 2 — Foundation content (~50 pages, hand-built)
 10. 4 asset-class hubs at `/signals/{class}`, 2,000+ words each.
 11. 12 competitor comparison pages at `/compare/sigmentum-vs-{x}` — hand-written, scrupulously fair about what competitors do better.
-12. Expand glossary from 15 to 30 highest-volume terms.
+12. ✅ Glossary expanded from 15 → 30 highest-volume terms. (In `astro/src/data/glossary.js`.)
 13. `/track-record` page publishing honest signal accuracy, including misses.
 14. **Sandbox share card** — branded, watermarked image with one-click share to X / Reddit / Discord. *Highest-leverage item in the entire plan; the Sandbox already exists, so this is close.*
 
