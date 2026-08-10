@@ -4,6 +4,7 @@ import { Nav, Ticker, Hero } from './sections-a';
 import { SignalFeed, AIReasoning, ActiveTrade } from './sections-b';
 import { RiskDashboard, Pipeline, Performance, Telegram, Learn, Footer } from './sections-c';
 import { HindsightSandbox, Pricing } from './sections-d';
+import { AccountProvider } from './sections-e';
 import { PopupNotifier } from './live';
 import { useTweaks } from './tweaks-panel';
 import { SigmentumTweaks, applyTweaks } from './tweaks';
@@ -24,7 +25,7 @@ export default function App() {
   }, [t]);
 
   return (
-    <>
+    <AccountProvider>
       <ScrollProgress/>
       <Nav/>
       <Hero/>
@@ -42,6 +43,6 @@ export default function App() {
       <Footer/>
       <PopupNotifier/>
       <SigmentumTweaks t={t} setTweak={setTweak}/>
-    </>
+    </AccountProvider>
   );
 }

@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
 import { PIPELINE, PERF_STATS, BLOG_POSTS, GLOSSARY } from './data';
-import { BiasBadge, ConfidenceBar, Reveal, CountUp, Sparkline, Waveform, LogoMark, Wordmark } from './primitives';
+import { BiasBadge, ConfidenceBar, Reveal, CountUp, Sparkline, Waveform, LogoMark, Wordmark, useMobile } from './primitives';
 import { LiveTelegram } from './live';
 
 export function RiskDashboard() {
+  const isMobile = useMobile();
   const exposures = [
     { asset: 'XAU/USD', pct: 28, bias: 'Long',  risk: 'Moderate' },
     { asset: 'BTC/USD', pct: 22, bias: 'Long',  risk: 'High' },
@@ -25,7 +26,7 @@ export function RiskDashboard() {
         </div>
       </Reveal>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: 20 }}>
         <Reveal>
           <div className="glass" style={{ padding: 24, borderRadius: 'var(--radius-xl)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
@@ -122,8 +123,8 @@ export function Pipeline() {
 
       <Reveal>
         <div className="glass" style={{ padding: 28, borderRadius: 'var(--radius-xl)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <span className="chip">
                 <span className="chip-dot live"></span>
                 <span>RUN · LIVE</span>
@@ -133,15 +134,18 @@ export function Pipeline() {
             <span className="mono" style={{ fontSize: 11, color: 'var(--ink-3)' }}>next run in 08:42</span>
           </div>
 
+          <div style={{ overflowX: 'auto', margin: '0 -4px', padding: '0 4px' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${PIPELINE.length}, 1fr)`,
             gap: 0,
             position: 'relative',
+            minWidth: 560,
           }}>
             {PIPELINE.map((p, i) => (
               <PipelineNode key={p.id} node={p} index={i} isLast={i === PIPELINE.length - 1}/>
             ))}
+          </div>
           </div>
 
           <div style={{
@@ -222,6 +226,7 @@ function PipelineNode({ node, index, isLast }) {
 }
 
 export function Performance() {
+  const isMobile = useMobile();
   return (
     <section className="container">
       <Reveal>
@@ -233,7 +238,7 @@ export function Performance() {
         </div>
       </Reveal>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 16, marginBottom: 20 }}>
         {PERF_STATS.map((s, i) => (
           <Reveal key={i} delay={i * 80}>
             <div className="glass lift" style={{ padding: 22, borderRadius: 'var(--radius-lg)' }}>
@@ -252,14 +257,14 @@ export function Performance() {
 
       <Reveal delay={300}>
         <div className="glass" style={{ padding: 24, borderRadius: 'var(--radius-xl)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', marginBottom: 20, flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0 }}>
             <div>
               <div className="eyebrow" style={{ marginBottom: 4 }}>Equity curve · 90d</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                <span className="mono" style={{ fontSize: 32, fontWeight: 500, letterSpacing: '-0.02em' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+                <span className="mono" style={{ fontSize: isMobile ? 26 : 32, fontWeight: 500, letterSpacing: '-0.02em' }}>
                   +<CountUp value={24.8} decimals={1}/>%
                 </span>
-                <span className="mono" style={{ fontSize: 13, color: 'var(--green)' }}>▲ vs benchmark +18.2%</span>
+                <span className="mono" style={{ fontSize: 12, color: 'var(--green)' }}>▲ vs benchmark +18.2%</span>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -328,9 +333,10 @@ function EquityCurve() {
 }
 
 export function Telegram() {
+  const isMobile = useMobile();
   return (
     <section className="container">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 48, alignItems: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.1fr', gap: isMobile ? 32 : 48, alignItems: 'center' }}>
         <Reveal>
           <div>
             <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--orange)' }}>07 · ALERTS</div>
@@ -376,6 +382,7 @@ const CATS = ['All', 'Market Structure', 'Risk', 'Systems', 'Education', 'Psycho
 export function Learn() {
   const [activePost, setActivePost] = useState(null);
   const [cat, setCat] = useState('All');
+  const isMobile = useMobile();
   const filtered = cat === 'All' ? BLOG_POSTS : BLOG_POSTS.filter(p => p.cat === cat);
 
   return (
@@ -389,7 +396,7 @@ export function Learn() {
         </div>
       </Reveal>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 24, marginBottom: 48 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: 24, marginBottom: 48 }}>
         <Reveal>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -476,7 +483,7 @@ function ArticleModal({ post, onClose }) {
     }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="glass glass-strong" style={{
         width: '100%', maxWidth: 760, borderRadius: 'var(--radius-xl)',
-        padding: '40px 48px', position: 'relative',
+        padding: 'clamp(20px, 5vw, 48px) clamp(18px, 5vw, 48px)', position: 'relative',
         border: '1px solid var(--glass-stroke)',
         boxShadow: 'var(--shadow-lg)',
       }}>

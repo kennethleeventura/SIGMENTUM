@@ -280,3 +280,14 @@ body.is-dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); bor
 
 .lift { transition: transform 300ms cubic-bezier(.2,.7,.2,1), box-shadow 300ms; }
 .lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+@media (max-width: 768px) {
+  section { padding: 64px 0; }
+  section.container { padding: 64px 20px; }
+  section.tight { padding: 36px 0; }
+  section.tight.container { padding: 36px 20px; }
+
+  .lift:hover { transform: none; }
+
+  ::-webkit-scrollbar { width: 0; height: 0; }
+}

@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import { GLOSSARY } from '../../data/glossary.js';
+
+const title       = 'Trading Glossary — Sigmentum';
+const description = 'Plain-English definitions for every term in the Sigmentum signal feed — from EMA crossovers and RSI to half-Kelly sizing and breakeven stops.';
+const canonical   = 'https://sigmentum.com/glossary';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTermSet',
+  name: 'Sigmentum Trading Glossary',
+  description,
+  url: canonical,
+  hasDefinedTerm: GLOSSARY.map(g => ({
+    '@type': 'DefinedTerm',
+    name: g.term,
+    description: g.def,
+    url: `${canonical}/${g.slug}`,
+  })),
+};
+---
+<Base title={title} description={description} canonical={canonical} schema={schema}>
+  <div class="container" style="padding-top: 64px; padding-bottom: 80px;">
+
+    <!-- Header -->
+    <div style="max-width: 600px; margin-bottom: 56px;">
+      <div class="eyebrow" style="margin-bottom: 14px; color: var(--orange);">SIGMENTUM · GLOSSARY</div>
+      <h1 class="serif" style="font-size: clamp(32px, 5vw, 52px); margin: 0 0 16px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;">
+        Every term in the signal feed, explained.
+      </h1>
+      <p style="font-size: 17px; color: var(--ink-3); line-height: 1.6; margin: 0;">
+        {GLOSSARY.length} definitions — from EMA crossovers and RSI to half-Kelly sizing and breakeven stops.
+        Written for traders, not textbooks.
+      </p>
+    </div>
+
+    <!-- Term grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+      {GLOSSARY.map(g => (
+        <a href={`/glossary/${g.slug}`} style="text-decoration: none; display: block;">
+          <div class="glass" style="padding: 20px 22px; transition: transform 300ms, box-shadow 300ms; cursor: pointer;"
+               onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-lg)'"
+               onmouseout="this.style.transform=''; this.style.boxShadow=''">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
+              <div style="font-size: 14px; font-weight: 700; color: var(--ink);">{g.term}</div>
+              <div class="mono" style="font-size: 10px; color: var(--orange); background: rgba(238,106,19,0.1); padding: 2px 7px; border-radius: 999px; flex-shrink: 0; margin-top: 2px;">
+                score {g.score}
+              </div>
+            </div>
+            <div style="font-size: 13px; color: var(--ink-3); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+              {g.def}
+            </div>
+            <div style="margin-top: 12px; font-size: 12px; color: var(--orange); font-weight: 500;">Read more →</div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+  </div>
+</Base>

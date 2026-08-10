@@ -1,0 +1,128 @@
+---
+import Base from '../../layouts/Base.astro';
+import { GLOSSARY } from '../../data/glossary.js';
+
+export function getStaticPaths() {
+  return GLOSSARY.map(g => ({ params: { slug: g.slug }, props: { term: g } }));
+}
+
+const { term } = Astro.props;
+const canonical = `https://sigmentum.com/glossary/${term.slug}`;
+
+const title       = `${term.term} — Sigmentum Glossary`;
+const description = term.seoDesc;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'DefinedTerm',
+      name: term.term,
+      description: term.def,
+      url: canonical,
+      inDefinedTermSet: {
+        '@type': 'DefinedTermSet',
+        name: 'Sigmentum Trading Glossary',
+        url: 'https://sigmentum.com/glossary',
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home',     item: 'https://sigmentum.com' },
+        { '@type': 'ListItem', position: 2, name: 'Glossary', item: 'https://sigmentum.com/glossary' },
+        { '@type': 'ListItem', position: 3, name: term.term,  item: canonical },
+      ],
+    },
+  ],
+};
+
+// Adjacent terms for prev/next navigation
+const idx  = GLOSSARY.findIndex(g => g.slug === term.slug);
+const prev = GLOSSARY[idx - 1] ?? null;
+const next = GLOSSARY[idx + 1] ?? null;
+---
+<Base title={title} description={description} canonical={canonical} schema={schema}>
+  <div class="container" style="padding-top: 56px; padding-bottom: 80px; max-width: 780px;">
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="https://kennethleeventura.github.io/SIGMENTUM/">Home</a>
+      <span>›</span>
+      <a href="/glossary">Glossary</a>
+      <span>›</span>
+      <span style="color: var(--ink-3);">{term.term}</span>
+    </nav>
+
+    <!-- Score chip -->
+    <div style="margin-bottom: 18px;">
+      <span class="mono" style="font-size: 10px; color: var(--orange); background: rgba(238,106,19,0.1); padding: 3px 10px; border-radius: 999px; letter-spacing: 0.1em;">
+        SIGNAL FREQUENCY SCORE · {term.score}/100
+      </span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="serif" style="font-size: clamp(28px, 5vw, 46px); margin: 0 0 8px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink);">
+      {term.term}
+    </h1>
+    <div style="width: 48px; height: 3px; background: var(--orange); border-radius: 2px; margin-bottom: 32px;"></div>
+
+    <!-- Short definition -->
+    <div class="glass" style="padding: 22px 26px; margin-bottom: 32px;">
+      <div class="eyebrow" style="margin-bottom: 10px; color: var(--orange);">Definition</div>
+      <p style="font-size: 16px; color: var(--ink-2); line-height: 1.65; margin: 0; font-weight: 500;">
+        {term.def}
+      </p>
+    </div>
+
+    <!-- Deeper explanation -->
+    <div style="margin-bottom: 40px;">
+      <h2 style="font-size: 18px; font-weight: 700; color: var(--ink); margin: 0 0 14px;">
+        How Sigmentum uses it
+      </h2>
+      <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0;">
+        {term.detail}
+      </p>
+    </div>
+
+    <!-- CTA card -->
+    <div style="background: linear-gradient(135deg, rgba(238,106,19,0.08), rgba(11,93,238,0.05)); border: 1px solid rgba(238,106,19,0.18); border-radius: var(--radius-lg); padding: 28px 32px; margin-bottom: 48px;">
+      <div style="font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 8px;">See this term in a live signal</div>
+      <p style="font-size: 14px; color: var(--ink-3); margin: 0 0 20px; line-height: 1.55;">
+        Every Sigmentum signal shows the exact values — {term.term} and the other three inputs — in the AI reasoning breakdown. Free account, no credit card.
+      </p>
+      <a href="https://kennethleeventura.github.io/SIGMENTUM/"
+         style="display: inline-flex; align-items: center; gap: 8px; background: var(--orange); color: white; padding: 11px 22px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 180ms;"
+         onmouseover="this.style.background='#d95e0f'"
+         onmouseout="this.style.background='var(--orange)'">
+        Open Sigmentum free →
+      </a>
+    </div>
+
+    <!-- Prev / Next navigation -->
+    <div style="display: flex; gap: 12px; justify-content: space-between; flex-wrap: wrap;">
+      {prev ? (
+        <a href={`/glossary/${prev.slug}`} style="flex: 1; min-width: 200px; text-decoration: none;">
+          <div class="glass" style="padding: 16px 20px;">
+            <div style="font-size: 10px; color: var(--ink-5); margin-bottom: 5px; font-family: var(--font-mono); letter-spacing: 0.1em;">← PREVIOUS</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--ink);">{prev.term}</div>
+          </div>
+        </a>
+      ) : <div style="flex: 1;"/>}
+      {next ? (
+        <a href={`/glossary/${next.slug}`} style="flex: 1; min-width: 200px; text-decoration: none; text-align: right;">
+          <div class="glass" style="padding: 16px 20px;">
+            <div style="font-size: 10px; color: var(--ink-5); margin-bottom: 5px; font-family: var(--font-mono); letter-spacing: 0.1em;">NEXT →</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--ink);">{next.term}</div>
+          </div>
+        </a>
+      ) : <div style="flex: 1;"/>}
+    </div>
+
+    <!-- All terms link -->
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="/glossary" style="font-size: 13px; color: var(--ink-4);">← All {GLOSSARY.length} glossary terms</a>
+    </div>
+
+  </div>
+</Base>
