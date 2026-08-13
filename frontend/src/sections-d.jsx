@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useMobile } from './primitives';
 import { useAccount } from './sections-e';
 
+const WATERMARK_HOST = 'sigmentumtrade.com';
+
 const SANDBOX_ASSETS = [
   { sym: 'XAU/USD', label: 'Gold Spot',     cls: 'COMMODITIES' },
   { sym: 'BTC/USD', label: 'Bitcoin',        cls: 'CRYPTO'      },
@@ -170,7 +172,7 @@ function downloadCard(results, assetSym, ruleName) {
   // Disclaimer
   ctx.fillStyle = 'rgba(255,255,255,0.14)';
   ctx.font = '10px monospace';
-  ctx.fillText('sigmentum.com  ·  Results are simulated. Past performance does not guarantee future results.', 32, 466);
+  ctx.fillText(`${WATERMARK_HOST}  ·  Results are simulated. Past performance does not guarantee future results.`, 32, 466);
 
   const link = document.createElement('a');
   link.download = 'sigmentum-backtest-' + assetSym.replace('/', '-').toLowerCase() + '.png';

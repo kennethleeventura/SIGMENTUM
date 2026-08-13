@@ -6,7 +6,7 @@
 - **Repo:** `kennethleeventura/SIGMENTUM`
 - **Live:** https://kennethleeventura.github.io/SIGMENTUM/
 - **Tagline / H1:** "Where signals meet momentum"
-- **Last synced:** August 4, 2026
+- **Last synced:** August 13, 2026
 - **Companion docs:** Notion "SIGMENTUM — Growth Engine Plan" · Airtable base `appNtF62rR4qIOxfO` (Keyword Targets, pSEO Page Templates, Content Pipeline, Automations, Growth Metrics)
 
 ---
@@ -22,7 +22,7 @@ Pricing is the **"2882 model"**: Free / $28 Signal / $82 Momentum.
 ## 2. Current state — verified from the repo, Aug 4 2026
 
 ### Stack
-Vite 8 + React 19, no router, no state library, no test framework. `frontend/` is the whole app. Deployed to GitHub Pages via `.github/workflows/deploy.yml` with `base: '/SIGMENTUM/'`.
+Vite 8 + React 19 SPA in `frontend/` (base `/app/`), Astro 4 SSG in `astro/` (static output). Combined into one GitHub Pages artifact: Astro at `/`, React SPA at `/app/`. Deployed via `.github/workflows/deploy.yml`. Domain `sigmentumtrade.com` registered; DNS not yet pointed — GitHub Pages is the current live URL.
 
 ### What is built
 | Area | Where | State |
@@ -31,39 +31,25 @@ Vite 8 + React 19, no router, no state library, no test framework. `frontend/` i
 | Signal feed, AI reasoning, active trade | `sections-b.jsx` | Done |
 | Risk dashboard, pipeline, performance, Telegram, Learn | `sections-c.jsx` | Done |
 | **Hindsight Sandbox**, Pricing | `sections-d.jsx` | Done |
-| Accounts, auth, checkout, subscriptions, onboarding tour, $10k paper wallet | `sections-e.jsx` | **On feature branch only** |
+| Accounts, auth, checkout, subscriptions, onboarding tour, $10k paper wallet | `sections-e.jsx` | Done (merged Aug 10) |
 | Blog (12 articles), glossary (15 terms) | `data.js` + `sections-c.jsx` | Done, client-side only |
 | Live popups, Telegram stream | `live.jsx` | Done |
 
 ### Branch situation
-`origin/claude/help-with-build-ujSHT` is **4 commits ahead of `main`** and unmerged:
-
-```
-25244fd feat: guided onboarding tour + $10k paper trading wallet
-a6601a6 feat: accounts, auth, checkout, and subscription management
-71305eb Mobile responsive pass across all sections
-3a63737 Fix CI: skip Pages deploy on feature branches
-```
-
-**Merging this branch fixes the deploy failures.** See §3.
+`main` is at `2236abd` (Aug 10 merge). `claude/help-with-build-ujSHT` is the active development branch — reset to `main` after each merge.
 
 ---
 
-## 3. The deploy failure — diagnosed, fix already written
+## 3. CI — current state (Aug 13)
 
-Six consecutive "Deploy to GitHub Pages" failures on Aug 3. Every one shows **build Succeeded, deploy Failed**.
+Workflow at `.github/workflows/deploy.yml` has four jobs:
 
-**Cause:** `main`'s workflow triggers on `branches: [main, claude/help-with-build-ujSHT]`. The build job runs fine on the feature branch, but the `deploy` job targets the `github-pages` environment, which by default only permits deployments from the default branch. So every feature-branch push builds, then dies at deploy with an environment protection error.
+- **build-astro** — installs, builds, asserts sitemap exists, asserts ≥32 pages, asserts ≥32 sitemap URLs, fails if `sigmentum.com` appears in `astro/dist/`; uploads artifact.
+- **build-react** — installs, builds React SPA with `base: '/app/'`, fails if `sigmentum.com` in `frontend/dist/`; uploads artifact.
+- **combine** — downloads both artifacts, places React at `_site/app/`, uploads combined as the Pages artifact.
+- **deploy** — deploys Pages artifact; guarded by `github.ref == 'refs/heads/main'` so feature-branch pushes build but do not deploy.
 
-**Fix:** commit `3a63737` on the feature branch already adds the guard:
-
-```yaml
-deploy:
-  needs: build
-  if: github.ref == 'refs/heads/main'
-```
-
-It is not on `main` yet, so `main`'s workflow keeps failing on every feature-branch push. **Merge the branch and the noise stops.** No other change needed.
+Triggers: `push` on `[main, claude/help-with-build-ujSHT]`, `pull_request` against `main`, `workflow_dispatch`.
 
 ---
 
@@ -84,15 +70,7 @@ This is the single most important open issue and it is why the build effort and 
 
 **The app currently has exactly one URL.** No router, no routes, no prerendering. Blog posts and glossary terms are JS arrays in `data.js` rendered into modals. There is no `sitemap.xml` and no `robots.txt` in `frontend/public/`. Googlebot sees a single page.
 
-**Programmatic SEO is impossible on this architecture.** Not hard — impossible. The 1,499 pages have nowhere to live.
-
-### Options, in order of preference
-
-1. **`vite-react-ssg` or `vite-plugin-ssr`** — add routing plus static prerendering. Every route becomes a real HTML file with its own title, meta, and JSON-LD. Smallest change that unlocks the plan.
-2. **Migrate to Next.js or Astro** — the correct long-term answer for a content-heavy SEO product. Astro is the better fit: content-first, ships almost no JS, and the existing React components port as islands.
-3. **Split the app** — keep the SPA as the logged-in dashboard, build a separate static marketing/content site. Clean separation, two deploys.
-
-**Do not generate content pages until one of these is chosen.** Adding more entries to `data.js` produces content Google cannot see or rank.
+**Architecture decision (Aug 2026):** Astro SSG at root for content + marketing; React SPA at `/app/` for the logged-in dashboard. Combined into one GitHub Pages artifact. Domain: `sigmentumtrade.com` (registered, DNS not yet pointed). `PUBLIC_SITE_URL` env var is the single source of truth for all canonical URLs — set it in GitHub Actions and the Astro config picks it up at build time. Default is the GitHub Pages URL.
 
 ---
 
@@ -137,7 +115,7 @@ Delete the `aggregateRating` block until there are real reviews to point at. Eve
 | Blocker | Blocks |
 | --- | --- |
 | Stripe verification unanswered since Jan 11 (5 notices) | All checkout, subscriptions, revenue automation. Account at risk. |
-| Cloudflare not authorized | Real `sigmentum.com` domain, edge caching, and a deploy target that can serve 1,000+ pages |
+| `sigmentumtrade.com` DNS not pointed | Custom-domain HTTPS. GitHub Pages serves the live site for now and handles far more than 1,499 static pages. Cloudflare is an upgrade (edge caching, WAF), not a prerequisite — point DNS directly to GitHub Pages first. |
 | Ahrefs plan has no API access | Rank tracking, keyword volumes. Google Search Console is the free substitute — not yet connected. |
 | Zapier has only Google Sheets connected | 8 of 16 planned automations |
 
@@ -148,21 +126,23 @@ Delete the `aggregateRating` block until there are real reviews to point at. Eve
 Merged from the Claude Code build work and the Cowork growth plan. **Strict order — each tier depends on the one above it.**
 
 ### Tier 0 — Unblock (do first, nothing else matters)
-1. ~~Merge `claude/help-with-build-ujSHT` → `main`. Fixes CI, ships auth + checkout + paper wallet + mobile pass.~~ **BLOCKED: PR #25 still draft — Kenneth must un-draft then merge.**
-2. ✅ Delete the `aggregateRating` block from `index.html`. Done on branch; ships when PR #25 merges.
+1. ✅ Merge `claude/help-with-build-ujSHT` → `main`. PR #25 merged Aug 10.
+2. ✅ Delete the `aggregateRating` block from `index.html`. Shipped with PR #25.
 3. Rotate the Firebase service-account key if not already done.
-4. ✅ **Architecture decided:** Astro SSG for content routes (`sigmentum.com`), React SPA stays as dashboard at `/app/`. Cloudflare Pages as deploy target (blocked on Kenneth).
+4. ✅ **Architecture decided:** Astro SSG for content routes (`sigmentumtrade.com`), React SPA at `/app/`. Combined into one GitHub Pages artifact. No Cloudflare required — point `sigmentumtrade.com` DNS to GitHub Pages directly.
 
 ### Tier 1 — Make the site indexable
-5. ✅ Astro 4 SSG scaffolded in `astro/`. Static output, `site: 'https://sigmentum.com'`, trailing-slash: never.
-6. ✅ `@astrojs/sitemap` integrated in `astro.config.mjs`. `astro/public/robots.txt` created pointing at `sitemap-index.xml`.
+5. ✅ Astro 4 SSG scaffolded in `astro/`. Static output, `site` derived from `PUBLIC_SITE_URL` env var (default: `https://kennethleeventura.github.io/SIGMENTUM`), trailing-slash: never.
+6. ✅ `@astrojs/sitemap` pinned at `3.1.6` (exact, no caret). `robots.txt` generated dynamically from `Astro.site` via `src/pages/robots.txt.ts`.
 7. ✅ Glossary on real routes: `/glossary` index + `/glossary/{slug}` detail pages (30 terms). Blog/learn routes: pending.
-8. ✅ Per-route `<title>`, meta description, canonical, and JSON-LD on all Astro pages.
-9. Connect Google Search Console; submit the sitemap. **Blocked on Cloudflare deploy.**
+8. ✅ Per-route `<title>`, meta description, canonical, and JSON-LD on all Astro pages. All URLs derived from `Astro.site` — zero hardcoded domains.
+9. Connect Google Search Console; submit the sitemap. **Blocked on DNS pointing `sigmentumtrade.com` → GitHub Pages.**
 
-### Tier 1 (continued) — Landing page
+### Tier 1 (continued) — Landing page + domain hygiene
 - ✅ `astro/src/pages/index.astro` — hero, features, pricing (2882 tiers $0/$28/$82), SoftwareApplication + Offer JSON-LD, UTMs on all CTAs.
 - ✅ `noindex` added to React SPA (`frontend/index.html`) so it doesn't compete with Astro landing.
+- ✅ De-hardcoded domain: one `PUBLIC_SITE_URL` env var drives every canonical, JSON-LD URL, sitemap, and robots.txt. CI fails if `sigmentum.com` appears in any dist output.
+- ✅ Vite base changed to `/app/`. Both builds combined into one Pages artifact: Astro at `/`, React at `/app/`.
 
 ### Tier 2 — Foundation content (~50 pages, hand-built)
 10. 4 asset-class hubs at `/signals/{class}`, 2,000+ words each.
