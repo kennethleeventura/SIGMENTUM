@@ -51,6 +51,28 @@ jobs:
           echo "Sitemap URLs: $COUNT"
           [ "$COUNT" -ge 32 ]
 
+      - name: Assert sitemap URLs match site URL
+        run: |
+          SITE_URL="${PUBLIC_SITE_URL:-https://sigmentumtrade.com}"
+          echo "Expected prefix: $SITE_URL"
+          BAD=$(grep -o '<loc>[^<]*</loc>' astro/dist/sitemap-0.xml | grep -v "^<loc>${SITE_URL}" | wc -l)
+          echo "Non-matching <loc> entries: $BAD"
+          [ "$BAD" -eq 0 ]
+
+      - name: Assert asset paths reflect base
+        run: |
+          SITE_URL="${PUBLIC_SITE_URL:-https://sigmentumtrade.com}"
+          BASE=$(echo "$SITE_URL" | sed -E 's|^https?://[^/]+||;s|/$||')
+          BASE="${BASE:-/}"
+          echo "Base: $BASE"
+          if [ "$BASE" != "/" ]; then
+            COUNT=$(grep -rl '"/_astro/' astro/dist/ 2>/dev/null | wc -l)
+            echo "Files with bare /_astro/ links: $COUNT"
+            [ "$COUNT" -eq 0 ]
+          else
+            echo "OK: base is /, no subpath check needed"
+          fi
+
       - name: Fail if sigmentum.com in Astro dist
         run: |
           if grep -r "sigmentum\.com" astro/dist/ 2>/dev/null; then
