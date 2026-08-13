@@ -73,6 +73,25 @@ jobs:
             echo "OK: base is /, no subpath check needed"
           fi
 
+      - name: Assert no broken internal links
+        run: |
+          BROKEN=0
+          while IFS= read -r html; do
+            while IFS= read -r path; do
+              case "$path" in /_astro/*|/app/*) continue ;; esac
+              path="${path%/}"
+              [ -z "$path" ] && continue
+              if [ ! -f "astro/dist${path}.html" ] && \
+                 [ ! -f "astro/dist${path}/index.html" ] && \
+                 [ ! -f "astro/dist${path}" ]; then
+                echo "BROKEN: $(basename "$html") -> $path"
+                BROKEN=$((BROKEN + 1))
+              fi
+            done < <(grep -oP '(?<=href=")[^"#]+(?=")' "$html" | grep '^/')
+          done < <(find astro/dist -name "*.html")
+          echo "Broken internal links: $BROKEN"
+          [ "$BROKEN" -eq 0 ]
+
       - name: Fail if sigmentum.com in Astro dist
         run: |
           if grep -r "sigmentum\.com" astro/dist/ 2>/dev/null; then
