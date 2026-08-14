@@ -6,7 +6,7 @@
 - **Repo:** `kennethleeventura/SIGMENTUM`
 - **Live:** https://sigmentumtrade.com · https://kennethleeventura.github.io/SIGMENTUM/ (still resolves)
 - **Tagline / H1:** "Where signals meet momentum"
-- **Last synced:** August 14, 2026
+- **Last synced:** August 14, 2026 (post-launch sprint)
 - **Companion docs:** Notion "SIGMENTUM — Growth Engine Plan" · Airtable base `appNtF62rR4qIOxfO` (Keyword Targets, pSEO Page Templates, Content Pipeline, Automations, Growth Metrics)
 
 ---
@@ -143,6 +143,10 @@ Merged from the Claude Code build work and the Cowork growth plan. **Strict orde
 - ✅ `noindex` added to React SPA (`frontend/index.html`) so it doesn't compete with Astro landing.
 - ✅ De-hardcoded domain: one `PUBLIC_SITE_URL` env var drives every canonical, JSON-LD URL, sitemap, and robots.txt. CI fails if `sigmentum.com` appears in any dist output.
 - ✅ Vite base changed to `/app/`. Both builds combined into one Pages artifact: Astro at `/`, React at `/app/`.
+- ✅ **P0: CTA links de-hardcoded.** All `kennethleeventura.github.io` refs replaced with relative paths (`/`, `/#pricing`, `/app/`). CI guard added — fails if `kennethleeventura.github.io` appears in either dist. (commit `43c7058`)
+- ✅ **P0: Email capture.** Permanent footer form + exit-intent/scroll-depth modal on every Astro page via Base.astro. Provider: Buttondown (embed-subscribe endpoint, username-only, no API key in client). Controlled by `BUTTONDOWN_USERNAME` repo secret → `PUBLIC_BUTTONDOWN_USERNAME` at build. Modal never fires on first paint (3s delay), dismissed 30 days via cookie. (commit `4ecef35`)
+- ✅ **P1: Dockable popups.** `live.jsx` PopupNotifier now has dock/expand toggle. Docked = slim right-edge tab with unread badge. Mobile starts docked, expands to bottom sheet. State via session cookie `sg_popup_docked`. Respects `prefers-reduced-motion`. (commit `84c141b`)
+- ✅ **P1: Social bar.** X, Telegram, Reddit, Discord icons in Astro footer and React SPA footer. URLs from `PUBLIC_SOCIAL_*` / `VITE_SOCIAL_*` env vars (set via `SOCIAL_X`, `SOCIAL_TELEGRAM`, `SOCIAL_REDDIT`, `SOCIAL_DISCORD` repo secrets). Icons greyed/disabled when unset — no code change needed when accounts go live. (commit `84c141b`)
 
 ### Tier 2 — Foundation content (~50 pages, hand-built)
 10. 4 asset-class hubs at `/signals/{class}`, 2,000+ words each.
