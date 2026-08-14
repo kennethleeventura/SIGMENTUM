@@ -37,6 +37,10 @@ jobs:
         working-directory: astro
         env:
           PUBLIC_BUTTONDOWN_USERNAME: ${{ secrets.BUTTONDOWN_USERNAME }}
+          PUBLIC_SOCIAL_X:        ${{ secrets.SOCIAL_X }}
+          PUBLIC_SOCIAL_TELEGRAM: ${{ secrets.SOCIAL_TELEGRAM }}
+          PUBLIC_SOCIAL_REDDIT:   ${{ secrets.SOCIAL_REDDIT }}
+          PUBLIC_SOCIAL_DISCORD:  ${{ secrets.SOCIAL_DISCORD }}
 
       - name: Assert sitemap exists
         run: test -f astro/dist/sitemap-index.xml
@@ -133,6 +137,11 @@ jobs:
       - name: Build React SPA
         run: npm run build
         working-directory: frontend
+        env:
+          VITE_SOCIAL_X:        ${{ secrets.SOCIAL_X }}
+          VITE_SOCIAL_TELEGRAM: ${{ secrets.SOCIAL_TELEGRAM }}
+          VITE_SOCIAL_REDDIT:   ${{ secrets.SOCIAL_REDDIT }}
+          VITE_SOCIAL_DISCORD:  ${{ secrets.SOCIAL_DISCORD }}
 
       - name: Fail if sigmentum.com in React dist
         run: |
