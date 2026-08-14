@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main, claude/help-with-build-ujSHT]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +17,95 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-astro:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: astro/package-lock.json
+
+      - name: Install Astro dependencies
+        run: npm ci
+        working-directory: astro
+
+      - name: Build Astro
+        run: npm run build
+        working-directory: astro
+
+      - name: Assert sitemap exists
+        run: test -f astro/dist/sitemap-index.xml
+
+      - name: Assert HTML page count (≥32)
+        run: |
+          COUNT=$(find astro/dist -name "*.html" | wc -l)
+          echo "HTML pages: $COUNT"
+          [ "$COUNT" -ge 32 ]
+
+      - name: Assert sitemap URL count (≥32)
+        run: |
+          COUNT=$(grep -o "<loc>" astro/dist/sitemap-0.xml | wc -l)
+          echo "Sitemap URLs: $COUNT"
+          [ "$COUNT" -ge 32 ]
+
+      - name: Assert sitemap URLs match site URL
+        run: |
+          SITE_URL="${PUBLIC_SITE_URL:-https://sigmentumtrade.com}"
+          echo "Expected prefix: $SITE_URL"
+          BAD=$(grep -o '<loc>[^<]*</loc>' astro/dist/sitemap-0.xml | grep -v "^<loc>${SITE_URL}" | wc -l)
+          echo "Non-matching <loc> entries: $BAD"
+          [ "$BAD" -eq 0 ]
+
+      - name: Assert asset paths reflect base
+        run: |
+          SITE_URL="${PUBLIC_SITE_URL:-https://sigmentumtrade.com}"
+          BASE=$(echo "$SITE_URL" | sed -E 's|^https?://[^/]+||;s|/$||')
+          BASE="${BASE:-/}"
+          echo "Base: $BASE"
+          if [ "$BASE" != "/" ]; then
+            COUNT=$(grep -rl '"/_astro/' astro/dist/ 2>/dev/null | wc -l)
+            echo "Files with bare /_astro/ links: $COUNT"
+            [ "$COUNT" -eq 0 ]
+          else
+            echo "OK: base is /, no subpath check needed"
+          fi
+
+      - name: Assert no broken internal links
+        run: |
+          BROKEN=0
+          while IFS= read -r html; do
+            while IFS= read -r path; do
+              case "$path" in /_astro/*|/app/*) continue ;; esac
+              path="${path%/}"
+              [ -z "$path" ] && continue
+              if [ ! -f "astro/dist${path}.html" ] && \
+                 [ ! -f "astro/dist${path}/index.html" ] && \
+                 [ ! -f "astro/dist${path}" ]; then
+                echo "BROKEN: $(basename "$html") -> $path"
+                BROKEN=$((BROKEN + 1))
+              fi
+            done < <(grep -oP '(?<=href=")[^"#]+(?=")' "$html" | grep '^/')
+          done < <(find astro/dist -name "*.html")
+          echo "Broken internal links: $BROKEN"
+          [ "$BROKEN" -eq 0 ]
+
+      - name: Fail if sigmentum.com in Astro dist
+        run: |
+          if grep -r "sigmentum\.com" astro/dist/ 2>/dev/null; then
+            echo "ERROR: sigmentum.com found in astro/dist — domain must be set via PUBLIC_SITE_URL"
+            exit 1
+          fi
+          echo "OK: no sigmentum.com in astro/dist"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: astro-dist
+          path: astro/dist
+
+  build-react:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,20 +116,47 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install React dependencies
         run: npm ci
         working-directory: frontend
 
-      - name: Build
+      - name: Build React SPA
         run: npm run build
         working-directory: frontend
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Fail if sigmentum.com in React dist
+        run: |
+          if grep -r "sigmentum\.com" frontend/dist/ 2>/dev/null; then
+            echo "ERROR: sigmentum.com found in frontend/dist"
+            exit 1
+          fi
+          echo "OK: no sigmentum.com in frontend/dist"
+
+      - uses: actions/upload-artifact@v4
         with:
+          name: react-dist
           path: frontend/dist
 
+  combine:
+    needs: [build-astro, build-react]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: astro-dist
+          path: _site
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: react-dist
+          path: _site/app
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
   deploy:
-    needs: build
+    needs: combine
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:

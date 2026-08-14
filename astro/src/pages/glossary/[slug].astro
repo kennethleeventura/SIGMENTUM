@@ -7,7 +7,8 @@ export function getStaticPaths() {
 }
 
 const { term } = Astro.props;
-const canonical = `https://sigmentum.com/glossary/${term.slug}`;
+const siteUrl   = (Astro.site?.href ?? 'https://kennethleeventura.github.io/SIGMENTUM').replace(/\/$/, '');
+const canonical = `${siteUrl}/glossary/${term.slug}`;
 
 const title       = `${term.term} — Sigmentum Glossary`;
 const description = term.seoDesc;
@@ -23,14 +24,14 @@ const schema = {
       inDefinedTermSet: {
         '@type': 'DefinedTermSet',
         name: 'Sigmentum Trading Glossary',
-        url: 'https://sigmentum.com/glossary',
+        url: `${siteUrl}/glossary`,
       },
     },
     {
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home',     item: 'https://sigmentum.com' },
-        { '@type': 'ListItem', position: 2, name: 'Glossary', item: 'https://sigmentum.com/glossary' },
+        { '@type': 'ListItem', position: 1, name: 'Home',     item: siteUrl },
+        { '@type': 'ListItem', position: 2, name: 'Glossary', item: `${siteUrl}/glossary` },
         { '@type': 'ListItem', position: 3, name: term.term,  item: canonical },
       ],
     },
