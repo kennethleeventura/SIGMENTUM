@@ -35,6 +35,8 @@ jobs:
       - name: Build Astro
         run: npm run build
         working-directory: astro
+        env:
+          PUBLIC_BUTTONDOWN_USERNAME: ${{ secrets.BUTTONDOWN_USERNAME }}
 
       - name: Assert sitemap exists
         run: test -f astro/dist/sitemap-index.xml

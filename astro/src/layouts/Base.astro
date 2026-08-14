@@ -6,6 +6,7 @@ export interface Props {
   schema?:     object;
 }
 const { title, description, canonical, schema } = Astro.props;
+const bdUsername = import.meta.env.PUBLIC_BUTTONDOWN_USERNAME || '';
 ---
 <!doctype html>
 <html lang="en">
@@ -116,6 +117,29 @@ const { title, description, canonical, schema } = Astro.props;
     .site-footer__links { display: flex; gap: 20px; }
     .site-footer__links a { font-size: 12px; color: var(--ink-4); }
 
+    /* Footer email capture */
+    .footer-email {
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      padding-bottom: 32px; margin-bottom: 32px;
+      border-bottom: 1px solid var(--line); flex-wrap: wrap;
+    }
+    .footer-email__copy { font-size: 14px; color: var(--ink-3); max-width: 360px; line-height: 1.6; }
+    .footer-email__form { display: flex; gap: 8px; flex-wrap: wrap; }
+    .footer-email__form input[type="email"] {
+      padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line-strong);
+      background: var(--paper); color: var(--ink); font-family: var(--font-sans);
+      font-size: 13px; outline: none; min-width: 200px; transition: border-color 200ms;
+    }
+    .footer-email__form input[type="email"]:focus { border-color: var(--orange); }
+    .footer-email__form input[type="email"]::placeholder { color: var(--ink-5); }
+    .footer-email__form button[type="submit"] {
+      padding: 9px 18px; border-radius: 999px; border: none; background: var(--ink);
+      color: white; font-size: 13px; font-weight: 500; font-family: var(--font-sans);
+      cursor: pointer; transition: background 180ms; white-space: nowrap;
+    }
+    .footer-email__form button[type="submit"]:hover { background: var(--ink-2); }
+    .footer-email__result { font-size: 13px; color: var(--green); font-weight: 500; padding: 9px 0; }
+
     /* Breadcrumbs */
     .breadcrumbs { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink-4); margin-bottom: 32px; }
     .breadcrumbs a { color: var(--ink-4); }
@@ -141,6 +165,52 @@ const { title, description, canonical, schema } = Astro.props;
     ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--ink-5); border-radius: 10px; border: 2px solid var(--paper); }
+
+    /* Email capture modal */
+    #sg-email-modal { display: none; position: fixed; inset: 0; z-index: 9999; }
+    #sg-modal-backdrop { position: absolute; inset: 0; background: rgba(11,13,18,0.6); backdrop-filter: blur(4px); cursor: pointer; }
+    #sg-modal-inner {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: min(440px, calc(100vw - 32px)); background: var(--paper);
+      border-radius: var(--radius-xl); padding: 36px; box-shadow: var(--shadow-lg);
+    }
+    @media (max-width: 640px) {
+      #sg-modal-inner {
+        left: 0; right: 0; bottom: 0; top: auto; transform: none;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0; max-height: 90vh; overflow-y: auto;
+      }
+    }
+    #sg-modal-close {
+      position: absolute; top: 14px; right: 14px; background: rgba(11,13,18,0.06); border: none;
+      border-radius: 999px; width: 28px; height: 28px; font-size: 18px; line-height: 1;
+      cursor: pointer; color: var(--ink-3); display: flex; align-items: center; justify-content: center;
+      transition: background 150ms;
+    }
+    #sg-modal-close:hover { background: rgba(11,13,18,0.12); }
+    .sg-modal-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; font-family: var(--font-serif); }
+    .sg-modal-desc { font-size: 14px; color: var(--ink-3); margin: 0 0 24px; line-height: 1.65; }
+    .modal-email-form { display: flex; flex-direction: column; gap: 10px; }
+    .modal-email-form input[type="email"] {
+      padding: 11px 16px; border-radius: 999px; border: 1px solid var(--line-strong);
+      background: var(--paper); color: var(--ink); font-family: var(--font-sans);
+      font-size: 14px; outline: none; transition: border-color 200ms;
+    }
+    .modal-email-form input[type="email"]:focus { border-color: var(--orange); }
+    .modal-email-form input[type="email"]::placeholder { color: var(--ink-5); }
+    .modal-email-form button[type="submit"] {
+      padding: 12px 20px; border-radius: 999px; border: none; background: var(--orange);
+      color: white; font-size: 14px; font-weight: 600; font-family: var(--font-sans);
+      cursor: pointer; transition: background 180ms; box-shadow: 0 4px 14px rgba(238,106,19,0.3);
+    }
+    .modal-email-form button[type="submit"]:hover { background: #d95e0f; }
+    .modal-legal { font-size: 11px; color: var(--ink-5); margin: 10px 0 0 !important; }
+    .modal-result { font-size: 14px; font-weight: 500; color: var(--green); margin-top: 12px; }
+    @media (prefers-reduced-motion: no-preference) and (min-width: 641px) {
+      #sg-email-modal.is-open { animation: sgFadeIn 250ms ease both; }
+      #sg-email-modal.is-open #sg-modal-inner { animation: sgSlideUp 300ms cubic-bezier(.2,.7,.2,1) both; }
+      @keyframes sgFadeIn   { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes sgSlideUp  { from { transform: translate(-50%, calc(-50% + 18px)); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
+    }
   </style>
 </head>
 <body>
@@ -173,6 +243,21 @@ const { title, description, canonical, schema } = Astro.props;
 
   <footer class="site-footer">
     <div class="container">
+
+      <!-- Email capture -->
+      <div class="footer-email">
+        <p class="footer-email__copy">
+          One signal breakdown a week — the trade, the reasoning, and whether it worked.
+        </p>
+        <div>
+          <form class="footer-email__form" id="footer-email-form" novalidate>
+            <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address"/>
+            <button type="submit">Subscribe</button>
+          </form>
+          <p class="footer-email__result" id="footer-email-result" style="display:none;"></p>
+        </div>
+      </div>
+
       <div class="site-footer__inner">
         <div class="site-footer__copy">© 2026 Sigmentum · 2882 LLC · Not financial advice.</div>
         <div class="site-footer__links">
@@ -183,6 +268,146 @@ const { title, description, canonical, schema } = Astro.props;
       </div>
     </div>
   </footer>
+
+  <!-- Exit-intent / scroll-depth email modal -->
+  <div id="sg-email-modal" role="dialog" aria-modal="true" aria-labelledby="sg-modal-title">
+    <div id="sg-modal-backdrop"></div>
+    <div id="sg-modal-inner">
+      <button id="sg-modal-close" aria-label="Close">×</button>
+      <h2 class="sg-modal-title" id="sg-modal-title">Stay ahead of the market</h2>
+      <p class="sg-modal-desc">
+        One signal breakdown a week — the trade, the reasoning, and whether it worked.
+      </p>
+      <form class="modal-email-form" id="modal-email-form" novalidate>
+        <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address"/>
+        <button type="submit">Get the breakdown</button>
+      </form>
+      <p class="modal-result" id="modal-email-result" style="display:none;"></p>
+      <p class="modal-legal">No spam. Unsubscribe at any time.</p>
+    </div>
+  </div>
 </div>
+
+<script define:vars={{ bdUsername }}>
+  // — helpers —
+  function sgCookieGet(n) {
+    const m = document.cookie.split('; ').find(r => r.startsWith(n + '='));
+    return m ? decodeURIComponent(m.split('=').slice(1).join('=')) : null;
+  }
+  function sgCookieSet(n, v, days) {
+    const exp = days ? '; expires=' + new Date(Date.now() + days * 864e5).toUTCString() : '';
+    document.cookie = n + '=' + encodeURIComponent(v) + exp + '; path=/; SameSite=Lax';
+  }
+  async function sgSubscribe(email) {
+    if (!bdUsername) return 'ok'; // pre-launch: accept silently
+    try {
+      const r = await fetch('https://buttondown.email/api/emails/embed-subscribe/' + bdUsername, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'email=' + encodeURIComponent(email),
+      });
+      return r.ok ? 'ok' : 'error';
+    } catch (_) { return 'error'; }
+  }
+
+  // — footer form —
+  var footerForm   = document.getElementById('footer-email-form');
+  var footerResult = document.getElementById('footer-email-result');
+  if (footerForm) {
+    footerForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var email = new FormData(e.target).get('email');
+      var btn   = this.querySelector('button');
+      btn.textContent = '…'; btn.disabled = true;
+      var status = await sgSubscribe(email);
+      if (status === 'ok') {
+        sgCookieSet('sg_sub_dismissed', '1', 30);
+        footerForm.style.display      = 'none';
+        footerResult.textContent      = "You're on the list. See you soon.";
+        footerResult.style.display    = 'block';
+      } else {
+        btn.textContent = 'Subscribe'; btn.disabled = false;
+        footerResult.textContent      = 'Something went wrong — try again.';
+        footerResult.style.color      = 'var(--orange)';
+        footerResult.style.display    = 'block';
+      }
+    });
+  }
+
+  // — modal —
+  var DISMISSED    = 'sg_sub_dismissed';
+  var modal        = document.getElementById('sg-email-modal');
+  var modalForm    = document.getElementById('modal-email-form');
+  var modalResult  = document.getElementById('modal-email-result');
+  var modalClose   = document.getElementById('sg-modal-close');
+  var backdrop     = document.getElementById('sg-modal-backdrop');
+  var modalShown   = false;
+
+  function sgOpenModal() {
+    if (modalShown || !modal || sgCookieGet(DISMISSED)) return;
+    modalShown = true;
+    modal.style.display = 'block';
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    (modal.querySelector('input[type="email"]') || modalClose).focus();
+  }
+  function sgCloseModal() {
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+    sgCookieSet(DISMISSED, '1', 30);
+  }
+
+  if (modal) {
+    if (backdrop)   backdrop.addEventListener('click', sgCloseModal);
+    if (modalClose) modalClose.addEventListener('click', sgCloseModal);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.style.display !== 'none') sgCloseModal();
+    });
+
+    if (modalForm) {
+      modalForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var email = new FormData(e.target).get('email');
+        var btn   = this.querySelector('button');
+        btn.textContent = '…'; btn.disabled = true;
+        await sgSubscribe(email);
+        sgCloseModal();
+        if (footerResult) {
+          footerResult.textContent   = "You're on the list. See you soon.";
+          footerResult.style.display = 'block';
+          if (footerForm) footerForm.style.display = 'none';
+        }
+      });
+    }
+
+    // triggers — never on first paint, never if already dismissed
+    var ready = false;
+    setTimeout(function () { ready = true; }, 3000);
+    var triggered = false;
+    var isMobile  = window.innerWidth < 768;
+
+    if (!isMobile) {
+      document.addEventListener('mouseleave', function (e) {
+        if (ready && e.clientY < 0 && !triggered && !sgCookieGet(DISMISSED)) {
+          triggered = true;
+          setTimeout(sgOpenModal, 300);
+        }
+      });
+    } else {
+      function checkScroll() {
+        if (!ready) return;
+        var pct = window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        if (pct >= 0.4 && !triggered && !sgCookieGet(DISMISSED)) {
+          triggered = true;
+          window.removeEventListener('scroll', checkScroll, { passive: true });
+          setTimeout(sgOpenModal, 300);
+        }
+      }
+      window.addEventListener('scroll', checkScroll, { passive: true });
+    }
+  }
+</script>
 </body>
 </html>
