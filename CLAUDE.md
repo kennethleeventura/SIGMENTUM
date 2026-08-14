@@ -4,9 +4,9 @@
 
 - **Owner:** Kenneth Ventura (2882 LLC)
 - **Repo:** `kennethleeventura/SIGMENTUM`
-- **Live:** https://kennethleeventura.github.io/SIGMENTUM/
+- **Live:** https://sigmentumtrade.com · https://kennethleeventura.github.io/SIGMENTUM/ (still resolves)
 - **Tagline / H1:** "Where signals meet momentum"
-- **Last synced:** August 13, 2026
+- **Last synced:** August 14, 2026
 - **Companion docs:** Notion "SIGMENTUM — Growth Engine Plan" · Airtable base `appNtF62rR4qIOxfO` (Keyword Targets, pSEO Page Templates, Content Pipeline, Automations, Growth Metrics)
 
 ---
@@ -22,7 +22,7 @@ Pricing is the **"2882 model"**: Free / $28 Signal / $82 Momentum.
 ## 2. Current state — verified from the repo, Aug 4 2026
 
 ### Stack
-Vite 8 + React 19 SPA in `frontend/` (base `/app/`), Astro 4 SSG in `astro/` (static output). Combined into one GitHub Pages artifact: Astro at `/`, React SPA at `/app/`. Deployed via `.github/workflows/deploy.yml`. Domain `sigmentumtrade.com` registered; DNS not yet pointed — GitHub Pages is the current live URL.
+Vite 8 + React 19 SPA in `frontend/` (base `/app/`), Astro 4 SSG in `astro/` (static output). Combined into one GitHub Pages artifact: Astro at `/`, React SPA at `/app/`. Deployed via `.github/workflows/deploy.yml`. Domain `sigmentumtrade.com` live — DNS pointed and TLS cert issued Aug 14 2026.
 
 ### What is built
 | Area | Where | State |
@@ -44,8 +44,8 @@ Vite 8 + React 19 SPA in `frontend/` (base `/app/`), Astro 4 SSG in `astro/` (st
 
 Workflow at `.github/workflows/deploy.yml` has four jobs:
 
-- **build-astro** — installs, builds, asserts sitemap exists, asserts ≥32 pages, asserts ≥32 sitemap URLs, fails if `sigmentum.com` appears in `astro/dist/`; uploads artifact.
-- **build-react** — installs, builds React SPA with `base: '/app/'`, fails if `sigmentum.com` in `frontend/dist/`; uploads artifact.
+- **build-astro** — installs, builds, asserts sitemap exists, asserts ≥32 pages, asserts ≥32 sitemap URLs, asserts sitemap URLs match site URL, asserts asset paths reflect base, asserts no broken internal links, fails if `sigmentum.com` or `kennethleeventura.github.io` in `astro/dist/`; uploads artifact.
+- **build-react** — installs, builds React SPA with `base: '/app/'`, fails if `sigmentum.com` or `kennethleeventura.github.io` in `frontend/dist/`; uploads artifact.
 - **combine** — downloads both artifacts, places React at `_site/app/`, uploads combined as the Pages artifact.
 - **deploy** — deploys Pages artifact; guarded by `github.ref == 'refs/heads/main'` so feature-branch pushes build but do not deploy.
 
@@ -115,7 +115,7 @@ Delete the `aggregateRating` block until there are real reviews to point at. Eve
 | Blocker | Blocks |
 | --- | --- |
 | Stripe verification unanswered since Jan 11 (5 notices) | All checkout, subscriptions, revenue automation. Account at risk. |
-| `sigmentumtrade.com` DNS not pointed | Custom-domain HTTPS. GitHub Pages serves the live site for now and handles far more than 1,499 static pages. Cloudflare is an upgrade (edge caching, WAF), not a prerequisite — point DNS directly to GitHub Pages first. |
+| ~~`sigmentumtrade.com` DNS not pointed~~ | Resolved Aug 14 — DNS live, TLS cert issued, custom domain configured in GitHub Pages. |
 | Ahrefs plan has no API access | Rank tracking, keyword volumes. Google Search Console is the free substitute — not yet connected. |
 | Zapier has only Google Sheets connected | 8 of 16 planned automations |
 

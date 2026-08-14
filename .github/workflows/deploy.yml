@@ -100,6 +100,14 @@ jobs:
           fi
           echo "OK: no sigmentum.com in astro/dist"
 
+      - name: Fail if kennethleeventura.github.io in Astro dist
+        run: |
+          if grep -r "kennethleeventura\.github\.io" astro/dist/ 2>/dev/null; then
+            echo "ERROR: kennethleeventura.github.io found in astro/dist — use relative paths"
+            exit 1
+          fi
+          echo "OK: no kennethleeventura.github.io in astro/dist"
+
       - uses: actions/upload-artifact@v4
         with:
           name: astro-dist
@@ -131,6 +139,14 @@ jobs:
             exit 1
           fi
           echo "OK: no sigmentum.com in frontend/dist"
+
+      - name: Fail if kennethleeventura.github.io in React dist
+        run: |
+          if grep -r "kennethleeventura\.github\.io" frontend/dist/ 2>/dev/null; then
+            echo "ERROR: kennethleeventura.github.io found in frontend/dist — use relative or sigmentumtrade.com"
+            exit 1
+          fi
+          echo "OK: no kennethleeventura.github.io in frontend/dist"
 
       - uses: actions/upload-artifact@v4
         with:
