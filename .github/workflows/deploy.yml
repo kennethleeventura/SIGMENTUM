@@ -165,6 +165,10 @@ jobs:
           path: frontend/dist
 
   combine:
+    # build-react still runs (kept in needs to catch regressions) but react-dist
+    # is intentionally NOT downloaded here — /app/ must not be publicly served
+    # until real data, tier gating, and non-display constraints are in place.
+    # See: SIGMENTUMrealdataproject.md Phase 0 / Phase 9 for restore conditions.
     needs: [build-astro, build-react]
     runs-on: ubuntu-latest
     steps:
@@ -172,11 +176,6 @@ jobs:
         with:
           name: astro-dist
           path: _site
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: react-dist
-          path: _site/app
 
       - uses: actions/upload-pages-artifact@v3
         with:
