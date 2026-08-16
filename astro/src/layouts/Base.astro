@@ -6,6 +6,14 @@ export interface Props {
   schema?:     object;
 }
 const { title, description, canonical, schema } = Astro.props;
+const bdUsername = import.meta.env.PUBLIC_BUTTONDOWN_USERNAME || '';
+
+const SOCIAL = [
+  { label: 'X / Twitter', href: import.meta.env.PUBLIC_SOCIAL_X        || '', viewBox: '0 0 24 24', path: 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.633L18.245 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z' },
+  { label: 'Telegram',    href: import.meta.env.PUBLIC_SOCIAL_TELEGRAM  || '', viewBox: '0 0 24 24', path: 'M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z' },
+  { label: 'Reddit',      href: import.meta.env.PUBLIC_SOCIAL_REDDIT    || '', viewBox: '0 0 24 24', path: 'M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z' },
+  { label: 'Discord',     href: import.meta.env.PUBLIC_SOCIAL_DISCORD   || '', viewBox: '0 0 24 24', path: 'M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.102 18.08.114 18.1.13 18.115a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z' },
+];
 ---
 <!doctype html>
 <html lang="en">
@@ -116,6 +124,41 @@ const { title, description, canonical, schema } = Astro.props;
     .site-footer__links { display: flex; gap: 20px; }
     .site-footer__links a { font-size: 12px; color: var(--ink-4); }
 
+    /* Footer email capture */
+    .footer-email {
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      padding-bottom: 32px; margin-bottom: 32px;
+      border-bottom: 1px solid var(--line); flex-wrap: wrap;
+    }
+    .footer-email__copy { font-size: 14px; color: var(--ink-3); max-width: 360px; line-height: 1.6; }
+    .footer-email__form { display: flex; gap: 8px; flex-wrap: wrap; }
+    .footer-email__form input[type="email"] {
+      padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line-strong);
+      background: var(--paper); color: var(--ink); font-family: var(--font-sans);
+      font-size: 13px; outline: none; min-width: 200px; transition: border-color 200ms;
+    }
+    .footer-email__form input[type="email"]:focus { border-color: var(--orange); }
+    .footer-email__form input[type="email"]::placeholder { color: var(--ink-5); }
+    .footer-email__form button[type="submit"] {
+      padding: 9px 18px; border-radius: 999px; border: none; background: var(--ink);
+      color: white; font-size: 13px; font-weight: 500; font-family: var(--font-sans);
+      cursor: pointer; transition: background 180ms; white-space: nowrap;
+    }
+    .footer-email__form button[type="submit"]:hover { background: var(--ink-2); }
+    .footer-email__result { font-size: 13px; color: var(--green); font-weight: 500; padding: 9px 0; }
+
+    /* Social icons */
+    .social-bar { display: flex; gap: 14px; align-items: center; }
+    .social-bar a {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 8px;
+      color: var(--ink-4); border: 1px solid var(--line);
+      transition: color 180ms, border-color 180ms, background 180ms;
+      text-decoration: none;
+    }
+    .social-bar a:hover { color: var(--orange); border-color: var(--orange); background: rgba(238,106,19,0.06); }
+    .social-bar a[aria-disabled="true"] { pointer-events: none; opacity: 0.35; }
+
     /* Breadcrumbs */
     .breadcrumbs { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink-4); margin-bottom: 32px; }
     .breadcrumbs a { color: var(--ink-4); }
@@ -141,6 +184,52 @@ const { title, description, canonical, schema } = Astro.props;
     ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--ink-5); border-radius: 10px; border: 2px solid var(--paper); }
+
+    /* Email capture modal */
+    #sg-email-modal { display: none; position: fixed; inset: 0; z-index: 9999; }
+    #sg-modal-backdrop { position: absolute; inset: 0; background: rgba(11,13,18,0.6); backdrop-filter: blur(4px); cursor: pointer; }
+    #sg-modal-inner {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: min(440px, calc(100vw - 32px)); background: var(--paper);
+      border-radius: var(--radius-xl); padding: 36px; box-shadow: var(--shadow-lg);
+    }
+    @media (max-width: 640px) {
+      #sg-modal-inner {
+        left: 0; right: 0; bottom: 0; top: auto; transform: none;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0; max-height: 90vh; overflow-y: auto;
+      }
+    }
+    #sg-modal-close {
+      position: absolute; top: 14px; right: 14px; background: rgba(11,13,18,0.06); border: none;
+      border-radius: 999px; width: 28px; height: 28px; font-size: 18px; line-height: 1;
+      cursor: pointer; color: var(--ink-3); display: flex; align-items: center; justify-content: center;
+      transition: background 150ms;
+    }
+    #sg-modal-close:hover { background: rgba(11,13,18,0.12); }
+    .sg-modal-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; font-family: var(--font-serif); }
+    .sg-modal-desc { font-size: 14px; color: var(--ink-3); margin: 0 0 24px; line-height: 1.65; }
+    .modal-email-form { display: flex; flex-direction: column; gap: 10px; }
+    .modal-email-form input[type="email"] {
+      padding: 11px 16px; border-radius: 999px; border: 1px solid var(--line-strong);
+      background: var(--paper); color: var(--ink); font-family: var(--font-sans);
+      font-size: 14px; outline: none; transition: border-color 200ms;
+    }
+    .modal-email-form input[type="email"]:focus { border-color: var(--orange); }
+    .modal-email-form input[type="email"]::placeholder { color: var(--ink-5); }
+    .modal-email-form button[type="submit"] {
+      padding: 12px 20px; border-radius: 999px; border: none; background: var(--orange);
+      color: white; font-size: 14px; font-weight: 600; font-family: var(--font-sans);
+      cursor: pointer; transition: background 180ms; box-shadow: 0 4px 14px rgba(238,106,19,0.3);
+    }
+    .modal-email-form button[type="submit"]:hover { background: #d95e0f; }
+    .modal-legal { font-size: 11px; color: var(--ink-5); margin: 10px 0 0 !important; }
+    .modal-result { font-size: 14px; font-weight: 500; color: var(--green); margin-top: 12px; }
+    @media (prefers-reduced-motion: no-preference) and (min-width: 641px) {
+      #sg-email-modal.is-open { animation: sgFadeIn 250ms ease both; }
+      #sg-email-modal.is-open #sg-modal-inner { animation: sgSlideUp 300ms cubic-bezier(.2,.7,.2,1) both; }
+      @keyframes sgFadeIn   { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes sgSlideUp  { from { transform: translate(-50%, calc(-50% + 18px)); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
+    }
   </style>
 </head>
 <body>
@@ -148,7 +237,7 @@ const { title, description, canonical, schema } = Astro.props;
   <nav class="site-nav">
     <div class="container">
       <div class="site-nav__inner">
-        <a href="https://kennethleeventura.github.io/SIGMENTUM/" class="site-nav__brand">
+        <a href="/" class="site-nav__brand">
           <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
             <rect width="40" height="40" rx="10" fill="#ee6a13"/>
             <path d="M12 28L20 12L28 28" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -158,9 +247,9 @@ const { title, description, canonical, schema } = Astro.props;
         </a>
         <div class="site-nav__links">
           <a href="/glossary">Glossary</a>
-          <a href="https://kennethleeventura.github.io/SIGMENTUM/#pricing">Pricing</a>
+          <a href="/#pricing">Pricing</a>
         </div>
-        <a href="https://kennethleeventura.github.io/SIGMENTUM/" class="site-nav__cta">
+        <a href="/app/" class="site-nav__cta">
           Open app →
         </a>
       </div>
@@ -173,16 +262,186 @@ const { title, description, canonical, schema } = Astro.props;
 
   <footer class="site-footer">
     <div class="container">
+
+      <!-- Email capture -->
+      <div class="footer-email">
+        <p class="footer-email__copy">
+          One signal breakdown a week — the trade, the reasoning, and whether it worked.
+        </p>
+        <div>
+          <form class="footer-email__form" id="footer-email-form" novalidate>
+            <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address"/>
+            <button type="submit">Subscribe</button>
+          </form>
+          <p class="footer-email__result" id="footer-email-result" style="display:none;"></p>
+        </div>
+      </div>
+
       <div class="site-footer__inner">
         <div class="site-footer__copy">© 2026 Sigmentum · 2882 LLC · Not financial advice.</div>
+        <nav class="social-bar" aria-label="Social links">
+          {SOCIAL.map(s => (
+            <a
+              href={s.href || '#'}
+              aria-label={s.label}
+              aria-disabled={!s.href ? 'true' : undefined}
+              rel="noopener noreferrer"
+              target={s.href ? '_blank' : undefined}
+            >
+              <svg width="16" height="16" viewBox={s.viewBox} fill="currentColor" aria-hidden="true">
+                <path d={s.path}/>
+              </svg>
+            </a>
+          ))}
+        </nav>
         <div class="site-footer__links">
           <a href="/glossary">Glossary</a>
-          <a href="https://kennethleeventura.github.io/SIGMENTUM/#pricing">Pricing</a>
-          <a href="https://kennethleeventura.github.io/SIGMENTUM/">Platform</a>
+          <a href="/#pricing">Pricing</a>
+          <a href="/app/">Platform</a>
         </div>
       </div>
     </div>
   </footer>
+
+  <!-- Exit-intent / scroll-depth email modal -->
+  <div id="sg-email-modal" role="dialog" aria-modal="true" aria-labelledby="sg-modal-title">
+    <div id="sg-modal-backdrop"></div>
+    <div id="sg-modal-inner">
+      <button id="sg-modal-close" aria-label="Close">×</button>
+      <h2 class="sg-modal-title" id="sg-modal-title">Stay ahead of the market</h2>
+      <p class="sg-modal-desc">
+        One signal breakdown a week — the trade, the reasoning, and whether it worked.
+      </p>
+      <form class="modal-email-form" id="modal-email-form" novalidate>
+        <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address"/>
+        <button type="submit">Get the breakdown</button>
+      </form>
+      <p class="modal-result" id="modal-email-result" style="display:none;"></p>
+      <p class="modal-legal">No spam. Unsubscribe at any time.</p>
+    </div>
+  </div>
 </div>
+
+<script define:vars={{ bdUsername }}>
+  // — helpers —
+  function sgCookieGet(n) {
+    const m = document.cookie.split('; ').find(r => r.startsWith(n + '='));
+    return m ? decodeURIComponent(m.split('=').slice(1).join('=')) : null;
+  }
+  function sgCookieSet(n, v, days) {
+    const exp = days ? '; expires=' + new Date(Date.now() + days * 864e5).toUTCString() : '';
+    document.cookie = n + '=' + encodeURIComponent(v) + exp + '; path=/; SameSite=Lax';
+  }
+  async function sgSubscribe(email) {
+    if (!bdUsername) return 'ok'; // pre-launch: accept silently
+    try {
+      const r = await fetch('https://buttondown.email/api/emails/embed-subscribe/' + bdUsername, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'email=' + encodeURIComponent(email),
+      });
+      return r.ok ? 'ok' : 'error';
+    } catch (_) { return 'error'; }
+  }
+
+  // — footer form —
+  var footerForm   = document.getElementById('footer-email-form');
+  var footerResult = document.getElementById('footer-email-result');
+  if (footerForm) {
+    footerForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var email = new FormData(e.target).get('email');
+      var btn   = this.querySelector('button');
+      btn.textContent = '…'; btn.disabled = true;
+      var status = await sgSubscribe(email);
+      if (status === 'ok') {
+        sgCookieSet('sg_sub_dismissed', '1', 30);
+        footerForm.style.display      = 'none';
+        footerResult.textContent      = "You're on the list. See you soon.";
+        footerResult.style.display    = 'block';
+      } else {
+        btn.textContent = 'Subscribe'; btn.disabled = false;
+        footerResult.textContent      = 'Something went wrong — try again.';
+        footerResult.style.color      = 'var(--orange)';
+        footerResult.style.display    = 'block';
+      }
+    });
+  }
+
+  // — modal —
+  var DISMISSED    = 'sg_sub_dismissed';
+  var modal        = document.getElementById('sg-email-modal');
+  var modalForm    = document.getElementById('modal-email-form');
+  var modalResult  = document.getElementById('modal-email-result');
+  var modalClose   = document.getElementById('sg-modal-close');
+  var backdrop     = document.getElementById('sg-modal-backdrop');
+  var modalShown   = false;
+
+  function sgOpenModal() {
+    if (modalShown || !modal || sgCookieGet(DISMISSED)) return;
+    modalShown = true;
+    modal.style.display = 'block';
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    (modal.querySelector('input[type="email"]') || modalClose).focus();
+  }
+  function sgCloseModal() {
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+    sgCookieSet(DISMISSED, '1', 30);
+  }
+
+  if (modal) {
+    if (backdrop)   backdrop.addEventListener('click', sgCloseModal);
+    if (modalClose) modalClose.addEventListener('click', sgCloseModal);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.style.display !== 'none') sgCloseModal();
+    });
+
+    if (modalForm) {
+      modalForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var email = new FormData(e.target).get('email');
+        var btn   = this.querySelector('button');
+        btn.textContent = '…'; btn.disabled = true;
+        await sgSubscribe(email);
+        sgCloseModal();
+        if (footerResult) {
+          footerResult.textContent   = "You're on the list. See you soon.";
+          footerResult.style.display = 'block';
+          if (footerForm) footerForm.style.display = 'none';
+        }
+      });
+    }
+
+    // triggers — never on first paint, never if already dismissed
+    var ready = false;
+    setTimeout(function () { ready = true; }, 3000);
+    var triggered = false;
+    var isMobile  = window.innerWidth < 768;
+
+    if (!isMobile) {
+      document.addEventListener('mouseleave', function (e) {
+        if (ready && e.clientY < 0 && !triggered && !sgCookieGet(DISMISSED)) {
+          triggered = true;
+          setTimeout(sgOpenModal, 300);
+        }
+      });
+    } else {
+      function checkScroll() {
+        if (!ready) return;
+        var pct = window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        if (pct >= 0.4 && !triggered && !sgCookieGet(DISMISSED)) {
+          triggered = true;
+          window.removeEventListener('scroll', checkScroll, { passive: true });
+          setTimeout(sgOpenModal, 300);
+        }
+      }
+      window.addEventListener('scroll', checkScroll, { passive: true });
+    }
+  }
+</script>
 </body>
 </html>

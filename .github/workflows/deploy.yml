@@ -35,6 +35,12 @@ jobs:
       - name: Build Astro
         run: npm run build
         working-directory: astro
+        env:
+          PUBLIC_BUTTONDOWN_USERNAME: ${{ secrets.BUTTONDOWN_USERNAME }}
+          PUBLIC_SOCIAL_X:        ${{ secrets.SOCIAL_X }}
+          PUBLIC_SOCIAL_TELEGRAM: ${{ secrets.SOCIAL_TELEGRAM }}
+          PUBLIC_SOCIAL_REDDIT:   ${{ secrets.SOCIAL_REDDIT }}
+          PUBLIC_SOCIAL_DISCORD:  ${{ secrets.SOCIAL_DISCORD }}
 
       - name: Assert sitemap exists
         run: test -f astro/dist/sitemap-index.xml
@@ -100,6 +106,14 @@ jobs:
           fi
           echo "OK: no sigmentum.com in astro/dist"
 
+      - name: Fail if kennethleeventura.github.io in Astro dist
+        run: |
+          if grep -r "kennethleeventura\.github\.io" astro/dist/ 2>/dev/null; then
+            echo "ERROR: kennethleeventura.github.io found in astro/dist — use relative paths"
+            exit 1
+          fi
+          echo "OK: no kennethleeventura.github.io in astro/dist"
+
       - uses: actions/upload-artifact@v4
         with:
           name: astro-dist
@@ -123,6 +137,11 @@ jobs:
       - name: Build React SPA
         run: npm run build
         working-directory: frontend
+        env:
+          VITE_SOCIAL_X:        ${{ secrets.SOCIAL_X }}
+          VITE_SOCIAL_TELEGRAM: ${{ secrets.SOCIAL_TELEGRAM }}
+          VITE_SOCIAL_REDDIT:   ${{ secrets.SOCIAL_REDDIT }}
+          VITE_SOCIAL_DISCORD:  ${{ secrets.SOCIAL_DISCORD }}
 
       - name: Fail if sigmentum.com in React dist
         run: |
@@ -132,12 +151,24 @@ jobs:
           fi
           echo "OK: no sigmentum.com in frontend/dist"
 
+      - name: Fail if kennethleeventura.github.io in React dist
+        run: |
+          if grep -r "kennethleeventura\.github\.io" frontend/dist/ 2>/dev/null; then
+            echo "ERROR: kennethleeventura.github.io found in frontend/dist — use relative or sigmentumtrade.com"
+            exit 1
+          fi
+          echo "OK: no kennethleeventura.github.io in frontend/dist"
+
       - uses: actions/upload-artifact@v4
         with:
           name: react-dist
           path: frontend/dist
 
   combine:
+    # build-react still runs (kept in needs to catch regressions) but react-dist
+    # is intentionally NOT downloaded here — /app/ must not be publicly served
+    # until real data, tier gating, and non-display constraints are in place.
+    # See: SIGMENTUMrealdataproject.md Phase 0 / Phase 9 for restore conditions.
     needs: [build-astro, build-react]
     runs-on: ubuntu-latest
     steps:
@@ -145,11 +176,6 @@ jobs:
         with:
           name: astro-dist
           path: _site
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: react-dist
-          path: _site/app
 
       - uses: actions/upload-pages-artifact@v3
         with:

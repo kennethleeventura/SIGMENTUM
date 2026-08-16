@@ -430,7 +430,7 @@ export function HindsightSandbox() {
                     style={{ flex: 1, justifyContent: 'center', fontSize: 13 }}>
                     ↓ Download results card
                   </button>
-                  <a href={'https://x.com/intent/tweet?text=' + encodeURIComponent(shareText + ' https://kennethleeventura.github.io/SIGMENTUM/')}
+                  <a href={'https://x.com/intent/tweet?text=' + encodeURIComponent(shareText + ' https://sigmentumtrade.com/')}
                     target="_blank" rel="noopener noreferrer"
                     className="btn" style={{ flex: 1, justifyContent: 'center', fontSize: 13 }}>
                     Share on X →
