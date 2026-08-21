@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 340" role="img" aria-label="Sigmentum — Where signals meet momentum">
+  <path d="M 52 196 C 52 108 116 44 204 44" stroke="#F06303" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <path d="M 76 220 C 76 268 136 304 204 236" stroke="#0AA152" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <circle cx="52" cy="196" r="14" fill="#F06303"/>
+  <text x="260" y="218" font-family="'Space Grotesk',ui-sans-serif,system-ui,sans-serif" font-weight="700" font-size="148" fill="#1A1B3E" letter-spacing="-3">SIGMENTUM</text>
+  <text x="262" y="300" font-family="'Space Grotesk',ui-sans-serif,system-ui,sans-serif" font-weight="400" font-size="52" fill="#1A1B3E" letter-spacing="2">Where signals meet momentum</text>
+</svg>

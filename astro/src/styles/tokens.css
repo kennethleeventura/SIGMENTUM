@@ -1,0 +1,123 @@
+/* Sigmentum design tokens — light theme (default) */
+:root {
+  /* Brand */
+  --orange:       #F06303;
+  --green:        #0AA152;
+  --navy:         #1A1B3E;
+  --spring:       #02EE82;
+
+  /* Accent split: fills vs readable text (WCAG AA) */
+  --accent:       #F06303;      /* fills, borders, icons — 2.96:1 (ok for decoration) */
+  --accent-text:  #BB4D02;      /* links, readable text — 4.60:1 on --paper */
+  --accent-hover: #9A3F01;
+  --pos:          #0AA152;      /* fills, positive indicators */
+  --pos-text:     #088142;      /* readable positive text — 4.55:1 on --paper */
+
+  /* Paper / ground */
+  --paper:   #F5F5F2;
+  --paper-2: #EBEBE6;
+  --paper-3: #DEDCD4;
+  --field-bg: #FFFFFF;
+
+  /* Ink scale */
+  --ink:   #1A1B3E;
+  --ink-2: #20242e;
+  --ink-3: #3a4050;
+  --ink-4: #6a7080;
+  --ink-5: #a0a5b3;
+
+  /* Lines */
+  --line:         rgba(26,27,62,0.08);
+  --line-strong:  rgba(26,27,62,0.14);
+
+  /* Glass */
+  --glass-bg:        rgba(255,255,255,0.55);
+  --glass-bg-strong: rgba(255,255,255,0.75);
+  --glass-border:    rgba(255,255,255,0.85);
+  --glass-stroke:    rgba(26,27,62,0.06);
+  --glass-blur:      22px;
+  --glass-sat:       160%;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(26,27,62,0.04),0 1px 1px rgba(26,27,62,0.03);
+  --shadow-md: 0 10px 30px -12px rgba(26,27,62,0.15),0 2px 6px rgba(26,27,62,0.05);
+  --shadow-lg: 0 30px 60px -20px rgba(26,27,62,0.25),0 8px 20px rgba(26,27,62,0.06);
+
+  /* Radii */
+  --radius:    14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Typography */
+  --font-sans:  'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, monospace;
+
+  /* Wash gradient — painted by .sg-wash::before */
+  --wash-a: rgba(240,99,3,0.08);
+  --wash-b: rgba(10,161,82,0.07);
+  --wash-c: rgba(26,27,62,0.04);
+
+  /* Transition speed (0ms until sg-theme-ready class is added) */
+  --theme-transition: 0ms;
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+  --accent:       #F06303;
+  --accent-text:  #FC7417;      /* 7.07:1 on --paper in dark */
+  --accent-hover: #FD8828;
+  --pos:          #0AA152;
+  --pos-text:     #0BB45C;      /* 7.12:1 on --paper in dark */
+
+  --paper:   #0B0C1A;
+  --paper-2: #111226;
+  --paper-3: #1A1B30;
+  --field-bg: #111226;
+
+  --ink:   #F0F0F5;
+  --ink-2: #D8D8E8;
+  --ink-3: #A8A8C0;
+  --ink-4: #7070A0;
+  --ink-5: #505080;
+
+  --line:        rgba(240,240,245,0.08);
+  --line-strong: rgba(240,240,245,0.14);
+
+  --glass-bg:        rgba(17,18,38,0.55);
+  --glass-bg-strong: rgba(17,18,38,0.75);
+  --glass-border:    rgba(255,255,255,0.08);
+  --glass-stroke:    rgba(240,240,245,0.08);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2),0 1px 1px rgba(0,0,0,0.15);
+  --shadow-md: 0 10px 30px -12px rgba(0,0,0,0.4),0 2px 6px rgba(0,0,0,0.2);
+  --shadow-lg: 0 30px 60px -20px rgba(0,0,0,0.5),0 8px 20px rgba(0,0,0,0.25);
+
+  --wash-a: rgba(240,99,3,0.06);
+  --wash-b: rgba(10,161,82,0.05);
+  --wash-c: rgba(2,238,130,0.03);
+}
+
+/* Transitions — only after first paint (class added via rAF) */
+.sg-theme-ready,
+.sg-theme-ready *,
+.sg-theme-ready *::before,
+.sg-theme-ready *::after {
+  transition:
+    background-color var(--theme-transition, 250ms),
+    border-color     var(--theme-transition, 250ms),
+    color            var(--theme-transition, 250ms),
+    fill             var(--theme-transition, 250ms),
+    box-shadow       var(--theme-transition, 250ms);
+}
+.sg-theme-ready { --theme-transition: 250ms; }
+
+/* Wash gradient background */
+.sg-wash { position: relative; }
+.sg-wash::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(900px 600px at 12% 5%,  var(--wash-a), transparent 60%),
+    radial-gradient(1000px 700px at 88% 30%, var(--wash-b), transparent 60%),
+    radial-gradient(800px 500px at 50% 110%, var(--wash-c), transparent 60%);
+}

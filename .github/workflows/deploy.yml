@@ -98,6 +98,29 @@ jobs:
           echo "Broken internal links: $BROKEN"
           [ "$BROKEN" -eq 0 ]
 
+      - name: Assert no legacy palette in dist
+        run: |
+          if grep -riE "#(ee6a13|0b5dee|0fb864|0b0d12|d95e0f|ff8a3d)" astro/dist/ 2>/dev/null; then
+            echo "ERROR: legacy off-brand hex found in astro/dist"; exit 1; fi
+          echo "OK: palette clean"
+
+      - name: Assert theme bootstrap on every page
+        run: |
+          MISSING=0
+          while IFS= read -r f; do
+            grep -q "sg-theme" "$f" || { echo "NO THEME SCRIPT: $f"; MISSING=$((MISSING+1)); }
+          done < <(find astro/dist -name "*.html")
+          echo "Pages missing theme bootstrap: $MISSING"
+          [ "$MISSING" -eq 0 ]
+
+      - name: Assert brand assets shipped
+        run: |
+          for f in favicon.svg favicon.ico apple-touch-icon.png og-default.png \
+                   brand/sigmentum-lockup-adaptive.svg brand/sigmentum-icon.svg; do
+            test -f "astro/dist/$f" || { echo "MISSING: $f"; exit 1; }
+          done
+          echo "OK: brand assets present"
+
       - name: Fail if sigmentum.com in Astro dist
         run: |
           if grep -r "sigmentum\.com" astro/dist/ 2>/dev/null; then

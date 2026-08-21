@@ -71,7 +71,7 @@ const schema = {
   <section style="padding: 96px 0 80px; text-align: center; position: relative;">
     <div class="container" style="max-width: 820px;">
 
-      <div class="eyebrow" style="margin-bottom: 20px; color: var(--orange);">
+      <div class="eyebrow" style="margin-bottom: 20px; color: var(--accent-text);">
         AI Trading Signals · 50+ Assets · Every 15 Minutes
       </div>
 
@@ -85,11 +85,11 @@ const schema = {
 
       <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
         <a href={`${APP}${UTM}&utm_content=hero_start_free`}
-           style="display: inline-flex; align-items: center; gap: 8px; background: var(--orange); color: white; padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 16px rgba(238,106,19,0.35); transition: all 200ms;">
+           style="display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: white; padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 35%, transparent); transition: all 200ms;">
           Start free — no card needed →
         </a>
         <a href="#how-it-works"
-           style="display: inline-flex; align-items: center; gap: 8px; background: white; color: var(--ink); padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 500; text-decoration: none; border: 1px solid var(--line-strong); transition: all 200ms;">
+           style="display: inline-flex; align-items: center; gap: 8px; background: var(--glass-bg-strong); color: var(--ink); padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 500; text-decoration: none; border: 1px solid var(--line-strong); transition: all 200ms;">
           See how it works
         </a>
       </div>
@@ -101,7 +101,7 @@ const schema = {
             <div class="eyebrow" style="font-size: 10px; color: var(--ink-5); margin-bottom: 4px;">LATEST SIGNAL</div>
             <div style="font-size: 17px; font-weight: 700; color: var(--ink);">XAU/USD · Gold</div>
           </div>
-          <span style="background: rgba(15,184,100,0.12); color: var(--green); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; font-family: var(--font-mono);">LONG</span>
+          <span style="background: color-mix(in srgb, var(--pos) 14%, transparent); color: var(--pos-text); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; font-family: var(--font-mono);">LONG</span>
         </div>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px;">
           {[
@@ -117,7 +117,7 @@ const schema = {
           ))}
         </div>
         <div style="font-size: 12px; color: var(--ink-4); line-height: 1.5; border-top: 1px solid var(--line); padding-top: 12px;">
-          <span style="color: var(--orange); font-weight: 600;">AI reasoning:</span> EMA-9 crossed above EMA-21 at London open with RSI-14 at 58 — momentum confirmed. Volatility regime normal. R:R 1.8:1.
+          <span style="color: var(--accent-text); font-weight: 600;">AI reasoning:</span> EMA-9 crossed above EMA-21 at London open with RSI-14 at 58 — momentum confirmed. Volatility regime normal. R:R 1.8:1.
         </div>
       </div>
 
@@ -154,7 +154,7 @@ const schema = {
           },
         ].map(({ step, title, body }) => (
           <div class="glass" style="padding: 28px 30px;">
-            <div class="mono" style="font-size: 12px; color: var(--orange); margin-bottom: 14px; font-weight: 600;">{step}</div>
+            <div class="mono" style="font-size: 12px; color: var(--accent-text); margin-bottom: 14px; font-weight: 600;">{step}</div>
             <h3 style="font-size: 17px; font-weight: 700; color: var(--ink); margin: 0 0 10px;">{title}</h3>
             <p style="font-size: 14px; color: var(--ink-3); line-height: 1.65; margin: 0;">{body}</p>
           </div>
@@ -165,7 +165,7 @@ const schema = {
   </section>
 
   <!-- ── FEATURES ──────────────────────────────────────────────────────── -->
-  <section id="features" style="padding: 80px 0; background: rgba(11,13,18,0.02);">
+  <section id="features" style="padding: 80px 0; background: color-mix(in srgb, var(--ink) 2%, transparent);">
     <div class="container">
 
       <div style="text-align: center; margin-bottom: 56px;">
@@ -213,9 +213,9 @@ const schema = {
           <div style="padding: 26px 28px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--glass-bg-strong);">
             <div style="font-size: 26px; margin-bottom: 14px; line-height: 1;">{icon}</div>
             <h3 style="font-size: 16px; font-weight: 700; color: var(--ink); margin: 0 0 8px;">{title}</h3>
-            <p style="font-size: 14px; color: var(--ink-3); line-height: 1.65; margin: 0 0 (link ? '14px' : '0');">{body}</p>
+            <p style="font-size: 14px; color: var(--ink-3); line-height: 1.65; margin: 0;">{body}</p>
             {link && (
-              <a href={link} style="font-size: 13px; color: var(--orange); font-weight: 500; text-decoration: none; display: inline-block; margin-top: 12px;">{linkLabel}</a>
+              <a href={link} style="font-size: 13px; color: var(--accent-text); font-weight: 500; text-decoration: none; display: inline-block; margin-top: 12px;">{linkLabel}</a>
             )}
           </div>
         ))}
@@ -248,7 +248,7 @@ const schema = {
           <ul style="list-style: none; padding: 0; margin: 0 0 32px; display: flex; flex-direction: column; gap: 10px;">
             {['5 signals per day', '$10k paper trading wallet', '3 Hindsight backtests / month', 'Full AI reasoning on each signal', 'Trading glossary access'].map(f => (
               <li style="display: flex; gap: 10px; font-size: 14px; color: var(--ink-3);">
-                <span style="color: var(--green); flex-shrink: 0; margin-top: 1px;">✓</span>
+                <span style="color: var(--pos-text); flex-shrink: 0; margin-top: 1px;">✓</span>
                 {f}
               </li>
             ))}
@@ -260,8 +260,8 @@ const schema = {
         </div>
 
         <!-- Signal -->
-        <div style="padding: 32px 28px; border-radius: var(--radius-lg); background: var(--ink); color: white; position: relative; overflow: hidden;">
-          <div style="position: absolute; top: 0; right: 0; width: 120px; height: 120px; background: radial-gradient(circle, rgba(238,106,19,0.25), transparent); border-radius: 0 0 0 100%;"></div>
+        <div style="padding: 32px 28px; border-radius: var(--radius-lg); background: var(--navy); color: white; position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; right: 0; width: 120px; height: 120px; background: radial-gradient(circle, color-mix(in srgb, var(--accent) 25%, transparent), transparent); border-radius: 0 0 0 100%;"></div>
           <div class="eyebrow" style="color: rgba(255,255,255,0.5); margin-bottom: 16px;">Signal</div>
           <div style="font-size: 40px; font-weight: 800; color: white; letter-spacing: -0.03em; margin-bottom: 4px;">$28</div>
           <div style="font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 28px;">per month</div>
@@ -275,13 +275,13 @@ const schema = {
               'Priority signal delivery',
             ].map(f => (
               <li style="display: flex; gap: 10px; font-size: 14px; color: rgba(255,255,255,0.75);">
-                <span style="color: var(--orange); flex-shrink: 0; margin-top: 1px;">✓</span>
+                <span style="color: var(--spring); flex-shrink: 0; margin-top: 1px;">✓</span>
                 {f}
               </li>
             ))}
           </ul>
           <a href={`${APP}${UTM}&utm_content=pricing_signal`}
-             style="display: block; text-align: center; padding: 12px 20px; border-radius: 999px; background: var(--orange); font-size: 14px; font-weight: 600; color: white; text-decoration: none; box-shadow: 0 4px 16px rgba(238,106,19,0.4); transition: all 180ms;">
+             style="display: block; text-align: center; padding: 12px 20px; border-radius: 999px; background: var(--accent); font-size: 14px; font-weight: 600; color: white; text-decoration: none; box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 40%, transparent); transition: all 180ms;">
             Get Signal →
           </a>
           <div style="text-align: center; margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.35);">Cancel anytime</div>
@@ -302,13 +302,13 @@ const schema = {
               'Dedicated support',
             ].map(f => (
               <li style="display: flex; gap: 10px; font-size: 14px; color: var(--ink-3);">
-                <span style="color: var(--green); flex-shrink: 0; margin-top: 1px;">✓</span>
+                <span style="color: var(--pos-text); flex-shrink: 0; margin-top: 1px;">✓</span>
                 {f}
               </li>
             ))}
           </ul>
           <a href={`${APP}${UTM}&utm_content=pricing_momentum`}
-             style="display: block; text-align: center; padding: 12px 20px; border-radius: 999px; background: var(--ink); font-size: 14px; font-weight: 600; color: white; text-decoration: none; transition: all 180ms;">
+             style="display: block; text-align: center; padding: 12px 20px; border-radius: 999px; background: var(--ink); font-size: 14px; font-weight: 600; color: var(--paper); text-decoration: none; transition: all 180ms;">
             Get Momentum →
           </a>
         </div>
@@ -332,7 +332,7 @@ const schema = {
         Free account, $10k paper wallet, no credit card. Upgrade when the signals prove themselves.
       </p>
       <a href={`${APP}${UTM}&utm_content=bottom_cta`}
-         style="display: inline-flex; align-items: center; gap: 8px; background: var(--orange); color: white; padding: 14px 32px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 20px rgba(238,106,19,0.35); transition: all 200ms;">
+         style="display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: white; padding: 14px 32px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 35%, transparent); transition: all 200ms;">
         Open Sigmentum free →
       </a>
       <div style="margin-top: 20px; font-size: 13px; color: var(--ink-5);">
