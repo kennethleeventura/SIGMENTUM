@@ -1,5 +1,8 @@
 ---
 import '../styles/tokens.css';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 export interface Props {
   title:       string;
@@ -9,6 +12,24 @@ export interface Props {
 }
 const { title, description, canonical, schema } = Astro.props;
 const bdUsername = import.meta.env.PUBLIC_BUTTONDOWN_USERNAME || '';
+
+// Load real brand SVGs and substitute fixed hex fills with CSS-variable style attrs
+// so the wordmark inherits --logo-ink while arcs keep their immutable brand colours.
+const _publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
+
+function loadSvg(rel: string, attrs: string): string {
+  let s = readFileSync(path.join(_publicDir, rel), 'utf-8');
+  // Fixed brand orange → CSS variable (CSS vars only work in style="", not fill="")
+  s = s.replace(/fill="#F06303"/g, 'style="fill:var(--sg-orange)"');
+  s = s.replace(/fill="#0AA152"/g, 'style="fill:var(--sg-green)"');
+  // Inject display size on root <svg> element
+  s = s.replace(/^<svg /, '<svg ' + attrs + ' ');
+  return s;
+}
+
+const lockupLg  = loadSvg('brand/sigmentum-lockup-adaptive.svg',  'height="26" style="width:auto;display:block;"');
+const lockupFt  = loadSvg('brand/sigmentum-lockup-adaptive.svg',  'height="22" style="width:auto;display:block;"');
+const iconSvg   = loadSvg('brand/sigmentum-icon.svg', 'height="28" width="28" style="display:block;"');
 
 const SOCIAL = [
   { label: 'X / Twitter', href: import.meta.env.PUBLIC_SOCIAL_X        || '', viewBox: '0 0 24 24', path: 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.633L18.245 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z' },
@@ -104,11 +125,11 @@ const SOCIAL = [
 
     /* Lockup: full at ≥420px, icon-only below */
     .sg-logo { line-height: 0; }
-    .sg-logo .sg-logo-lockup { display: block; }
-    .sg-logo .sg-logo-icon  { display: none; }
+    .sg-logo-lockup { display: block; line-height: 0; }
+    .sg-logo-icon  { display: none;  line-height: 0; }
     @media (max-width: 419px) {
-      .sg-logo .sg-logo-lockup { display: none; }
-      .sg-logo .sg-logo-icon  { display: block; }
+      .sg-logo-lockup { display: none; }
+      .sg-logo-icon  { display: block; }
     }
 
     .site-nav__links { display: flex; gap: 24px; }
@@ -266,18 +287,9 @@ const SOCIAL = [
       <div class="site-nav__inner">
         <a href="/" class="site-nav__brand sg-logo" aria-label="Sigmentum — home">
           <!-- Full lockup (≥420px) -->
-          <svg class="sg-logo-lockup" viewBox="0 0 1640 280" height="26" role="img" aria-label="Sigmentum" style="width:auto;">
-            <path d="M 52 196 C 52 108 116 44 204 44" style="stroke:var(--accent);" stroke-width="24" stroke-linecap="round" fill="none"/>
-            <path d="M 76 220 C 76 268 136 304 204 236" style="stroke:var(--pos);" stroke-width="24" stroke-linecap="round" fill="none"/>
-            <circle cx="52" cy="196" r="14" style="fill:var(--accent);"/>
-            <text x="260" y="218" font-family="'Space Grotesk',ui-sans-serif,system-ui,sans-serif" font-weight="700" font-size="148" fill="currentColor" letter-spacing="-3">SIGMENTUM</text>
-          </svg>
+          <span class="sg-logo-lockup"><Fragment set:html={lockupLg}/></span>
           <!-- Icon only (<420px) -->
-          <svg class="sg-logo-icon" viewBox="0 0 280 280" height="28" width="28" role="img" aria-label="Sigmentum">
-            <path d="M 52 196 C 52 108 116 44 204 44" style="stroke:var(--accent);" stroke-width="24" stroke-linecap="round" fill="none"/>
-            <path d="M 76 220 C 76 268 136 304 204 236" style="stroke:var(--pos);" stroke-width="24" stroke-linecap="round" fill="none"/>
-            <circle cx="52" cy="196" r="14" style="fill:var(--accent);"/>
-          </svg>
+          <span class="sg-logo-icon"><Fragment set:html={iconSvg}/></span>
         </a>
         <div class="site-nav__links">
           <a href="/glossary">Glossary</a>
@@ -326,12 +338,7 @@ const SOCIAL = [
 
       <div class="site-footer__inner">
         <div class="site-footer__brand">
-          <svg viewBox="0 0 1640 280" height="22" role="img" aria-label="Sigmentum" style="width:auto;">
-            <path d="M 52 196 C 52 108 116 44 204 44" style="stroke:var(--accent);" stroke-width="24" stroke-linecap="round" fill="none"/>
-            <path d="M 76 220 C 76 268 136 304 204 236" style="stroke:var(--pos);" stroke-width="24" stroke-linecap="round" fill="none"/>
-            <circle cx="52" cy="196" r="14" style="fill:var(--accent);"/>
-            <text x="260" y="218" font-family="'Space Grotesk',ui-sans-serif,system-ui,sans-serif" font-weight="700" font-size="148" fill="currentColor" letter-spacing="-3">SIGMENTUM</text>
-          </svg>
+          <span class="sg-logo"><Fragment set:html={lockupFt}/></span>
           <span class="site-footer__copy">© 2026 Sigmentum · 2882 LLC · Not financial advice.</span>
         </div>
         <nav class="social-bar" aria-label="Social links">
