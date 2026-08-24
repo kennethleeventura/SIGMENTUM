@@ -94,30 +94,41 @@ const schema = {
         </a>
       </div>
 
-      <!-- Signal preview card -->
+      {/* Signal card — ANATOMY, not a live or historical signal.
+          Two hard constraints applied here and both were being broken:
+            1. No value shown to a user may be invented and presented as
+               current. This card carried a "latest signal" headline, a
+               hardcoded confidence score and entry/take-profit/stop levels,
+               none of which came from anywhere.
+            2. XAU/USD is a Twelve Data non-display asset. We are licensed to
+               compute with that data, never to render its prices.
+          Price levels were removed, not swapped for different numbers.
+          This note is an Astro expression comment and does not ship. */}
       <div class="glass" style="max-width: 540px; margin: 56px auto 0; padding: 20px 24px; text-align: left;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
           <div>
-            <div class="eyebrow" style="font-size: 10px; color: var(--ink-5); margin-bottom: 4px;">LATEST SIGNAL</div>
-            <div style="font-size: 17px; font-weight: 700; color: var(--ink);">XAU/USD · Gold</div>
+            <div class="eyebrow" style="font-size: 10px; color: var(--ink-5); margin-bottom: 4px;">What a signal contains</div>
+            <div style="font-size: 17px; font-weight: 700; color: var(--ink);">Anatomy of a Sigmentum signal</div>
           </div>
-          <span style="background: color-mix(in srgb, var(--pos) 14%, transparent); color: var(--pos-text); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; font-family: var(--font-mono);">LONG</span>
+          <span style="background: var(--line); color: var(--ink-4); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; font-family: var(--font-mono);">EXAMPLE</span>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 12px; margin-bottom: 14px;">
           {[
-            { label: 'Confidence', value: '91%' },
-            { label: 'Entry',      value: '2,341' },
-            { label: 'TP1',        value: '2,358' },
-            { label: 'Stop',       value: '2,328' },
+            { label: 'Asset',      value: 'Pair' },
+            { label: 'Bias',       value: 'Long / Short' },
+            { label: 'Confidence', value: '0\u2013100' },
+            { label: 'Computed',   value: 'Timestamp' },
           ].map(({ label, value }) => (
             <div>
               <div style="font-size: 10px; color: var(--ink-5); margin-bottom: 3px; font-family: var(--font-mono); letter-spacing: 0.08em;">{label}</div>
-              <div class="mono" style="font-size: 14px; font-weight: 600; color: var(--ink);">{value}</div>
+              <div class="mono" style="font-size: 13px; font-weight: 600; color: var(--ink-3);">{value}</div>
             </div>
           ))}
         </div>
         <div style="font-size: 12px; color: var(--ink-4); line-height: 1.5; border-top: 1px solid var(--line); padding-top: 12px;">
-          <span style="color: var(--accent-text); font-weight: 600;">AI reasoning:</span> EMA-9 crossed above EMA-21 at London open with RSI-14 at 58 — momentum confirmed. Volatility regime normal. R:R 1.8:1.
+          <span style="color: var(--accent-text); font-weight: 600;">Every signal ships its reasoning</span> — which indicators fired, on what
+          timeframe, and the volatility regime at the time — so you can judge it rather than take it
+          on faith. No live signal is shown here. Not financial advice.
         </div>
       </div>
 
