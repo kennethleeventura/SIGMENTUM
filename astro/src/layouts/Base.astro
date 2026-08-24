@@ -22,6 +22,14 @@ function loadSvg(rel: string, attrs: string): string {
   // Fixed brand orange → CSS variable (CSS vars only work in style="", not fill="")
   s = s.replace(/fill="#F06303"/g, 'style="fill:var(--sg-orange)"');
   s = s.replace(/fill="#0AA152"/g, 'style="fill:var(--sg-green)"');
+  // Strip the file's own width/height off the root element BEFORE injecting.
+  // Leaving them produces <svg height="26" style="width:auto" ... width="1570.19">.
+  // On an inline SVG root, width:auto does NOT resolve from the aspect ratio the
+  // way it does for <img> — it falls back to the width attribute, so the nav
+  // lockup rendered 1570px by 26px and pushed every page 617px wide at desktop
+  // and 1281px at mobile.
+  s = s.replace(/^(<svg\b[^>]*?)\s+width="[^"]*"/, '$1');
+  s = s.replace(/^(<svg\b[^>]*?)\s+height="[^"]*"/, '$1');
   // Inject display size on root <svg> element
   s = s.replace(/^<svg /, '<svg ' + attrs + ' ');
   return s;
@@ -87,7 +95,7 @@ const SOCIAL = [
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 
-  <style>
+  <style is:global>
     *, *::before, *::after { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -127,9 +135,16 @@ const SOCIAL = [
     .sg-logo { line-height: 0; }
     .sg-logo-lockup { display: block; line-height: 0; }
     .sg-logo-icon  { display: none;  line-height: 0; }
-    @media (max-width: 419px) {
+    /* Four children on one row. Shed them in order of importance rather than
+       letting the row set a min-width the phone cannot honour. */
+    @media (max-width: 620px) {
+      .site-nav__links { display: none; }
+    }
+    @media (max-width: 460px) {
       .sg-logo-lockup { display: none; }
       .sg-logo-icon  { display: block; }
+      .site-nav__cta   { padding: 8px 13px; font-size: 12px; }
+      .site-nav__inner { gap: 12px; }
     }
 
     .site-nav__links { display: flex; gap: 24px; }
@@ -167,7 +182,12 @@ const SOCIAL = [
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
       flex-wrap: wrap;
     }
-    .site-footer__brand { display: flex; align-items: center; gap: 12px; line-height: 0; }
+    .site-footer__brand { display: flex; align-items: center; gap: 12px; }
+    .site-footer__brand .sg-logo { line-height: 0; }
+    .site-footer__meta { display: flex; flex-direction: column; gap: 4px; line-height: 1.5; }
+    .site-footer__contact { font-size: 12px; color: var(--ink-4); display: flex; gap: 6px; flex-wrap: wrap; }
+    .site-footer__contact a { color: var(--ink-4); text-decoration: none; }
+    .site-footer__contact a:hover { color: var(--accent-text); text-decoration: underline; }
     .site-footer__copy { font-size: 12px; color: var(--ink-5); }
     .site-footer__links { display: flex; gap: 20px; }
     .site-footer__links a { font-size: 12px; color: var(--ink-4); }
@@ -339,7 +359,16 @@ const SOCIAL = [
       <div class="site-footer__inner">
         <div class="site-footer__brand">
           <span class="sg-logo"><Fragment set:html={lockupFt}/></span>
-          <span class="site-footer__copy">© 2026 Sigmentum · 2882 LLC · Not financial advice.</span>
+<div class="site-footer__meta">
+            <span class="site-footer__copy">© 2026 Sigmentum — a product of 2882 LLC. All rights reserved.</span>
+            <span class="site-footer__contact">
+              <a href="mailto:support@sigmentumtrade.com">support@sigmentumtrade.com</a>
+              <span aria-hidden="true">·</span>
+              <a href="https://sigmentumtrade.com">sigmentumtrade.com</a>
+              <span aria-hidden="true">·</span>
+              Not financial advice.
+            </span>
+          </div>
         </div>
         <nav class="social-bar" aria-label="Social links">
           {SOCIAL.map(s => (
