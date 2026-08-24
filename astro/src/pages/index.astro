@@ -2,7 +2,11 @@
 import Base from '../layouts/Base.astro';
 
 const UTM = '?utm_source=sigmentum&utm_medium=astro_landing&utm_campaign=organic';
-const APP = '/app/';
+// /app/ is not published (Phase 0). Every CTA pointing at it returned a 404,
+// and the broken-link CI guard skips /app/* so it could not flag them. Until
+// Phase 9 restores the app, CTAs land on the footer waitlist form. The query
+// string must precede the fragment or the anchor never resolves.
+const cta = (content) => `/${UTM}&utm_content=${content}#waitlist`;
 
 const siteUrl     = (Astro.site?.href ?? 'https://sigmentumtrade.com').replace(/\/$/, '');
 const title       = 'Sigmentum — Where signals meet momentum';
@@ -84,9 +88,9 @@ const schema = {
       </p>
 
       <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-        <a href={`${APP}${UTM}&utm_content=hero_start_free`}
+        <a href={cta('hero_start_free')}
            style="display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: white; padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 35%, transparent); transition: all 200ms;">
-          Start free — no card needed →
+          Join the waitlist →
         </a>
         <a href="#how-it-works"
            style="display: inline-flex; align-items: center; gap: 8px; background: var(--glass-bg-strong); color: var(--ink); padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 500; text-decoration: none; border: 1px solid var(--line-strong); transition: all 200ms;">
@@ -264,7 +268,7 @@ const schema = {
               </li>
             ))}
           </ul>
-          <a href={`${APP}${UTM}&utm_content=pricing_free`}
+          <a href={cta('pricing_free')}
              style="display: block; text-align: center; padding: 12px 20px; border-radius: 999px; border: 1px solid var(--line-strong); font-size: 14px; font-weight: 500; color: var(--ink); text-decoration: none; transition: all 180ms;">
             Start free →
           </a>
@@ -291,7 +295,7 @@ const schema = {
               </li>
             ))}
           </ul>
-          <a href={`${APP}${UTM}&utm_content=pricing_signal`}
+          <a href={cta('pricing_signal')}
              style="display: block; text-align: center; padding: 12px 20px; border-radius: 999px; background: var(--accent); font-size: 14px; font-weight: 600; color: white; text-decoration: none; box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 40%, transparent); transition: all 180ms;">
             Get Signal →
           </a>
@@ -318,7 +322,7 @@ const schema = {
               </li>
             ))}
           </ul>
-          <a href={`${APP}${UTM}&utm_content=pricing_momentum`}
+          <a href={cta('pricing_momentum')}
              style="display: block; text-align: center; padding: 12px 20px; border-radius: 999px; background: var(--ink); font-size: 14px; font-weight: 600; color: var(--paper); text-decoration: none; transition: all 180ms;">
             Get Momentum →
           </a>
@@ -344,7 +348,7 @@ const schema = {
       <p style="font-size: 16px; color: var(--ink-3); margin: 0 0 32px; line-height: 1.6;">
         Free account, $10k paper wallet, no credit card. Upgrade when the signals prove themselves.
       </p>
-      <a href={`${APP}${UTM}&utm_content=bottom_cta`}
+      <a href={cta('bottom_cta')}
          style="display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: white; padding: 14px 32px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 35%, transparent); transition: all 200ms;">
         Open Sigmentum free →
       </a>
