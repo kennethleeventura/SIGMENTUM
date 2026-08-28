@@ -1,4 +1,9 @@
 ---
+import '../styles/tokens.css';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
 export interface Props {
   title:       string;
   description: string;
@@ -7,6 +12,32 @@ export interface Props {
 }
 const { title, description, canonical, schema } = Astro.props;
 const bdUsername = import.meta.env.PUBLIC_BUTTONDOWN_USERNAME || '';
+
+// Load real brand SVGs and substitute fixed hex fills with CSS-variable style attrs
+// so the wordmark inherits --logo-ink while arcs keep their immutable brand colours.
+const _publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
+
+function loadSvg(rel: string, attrs: string): string {
+  let s = readFileSync(path.join(_publicDir, rel), 'utf-8');
+  // Fixed brand orange → CSS variable (CSS vars only work in style="", not fill="")
+  s = s.replace(/fill="#F06303"/g, 'style="fill:var(--sg-orange)"');
+  s = s.replace(/fill="#0AA152"/g, 'style="fill:var(--sg-green)"');
+  // Strip the file's own width/height off the root element BEFORE injecting.
+  // Leaving them produces <svg height="26" style="width:auto" ... width="1570.19">.
+  // On an inline SVG root, width:auto does NOT resolve from the aspect ratio the
+  // way it does for <img> — it falls back to the width attribute, so the nav
+  // lockup rendered 1570px by 26px and pushed every page 617px wide at desktop
+  // and 1281px at mobile.
+  s = s.replace(/^(<svg\b[^>]*?)\s+width="[^"]*"/, '$1');
+  s = s.replace(/^(<svg\b[^>]*?)\s+height="[^"]*"/, '$1');
+  // Inject display size on root <svg> element
+  s = s.replace(/^<svg /, '<svg ' + attrs + ' ');
+  return s;
+}
+
+const lockupLg  = loadSvg('brand/sigmentum-lockup-adaptive.svg',  'height="26" style="width:auto;display:block;"');
+const lockupFt  = loadSvg('brand/sigmentum-lockup-adaptive.svg',  'height="22" style="width:auto;display:block;"');
+const iconSvg   = loadSvg('brand/sigmentum-icon.svg', 'height="28" width="28" style="display:block;"');
 
 const SOCIAL = [
   { label: 'X / Twitter', href: import.meta.env.PUBLIC_SOCIAL_X        || '', viewBox: '0 0 24 24', path: 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.633L18.245 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z' },
@@ -18,6 +49,18 @@ const SOCIAL = [
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Anti-FOUC: must be first, blocking, before any stylesheet -->
+  <script is:inline>
+    (function () {
+      var s = null;
+      try { s = localStorage.getItem('sg-theme'); } catch (e) {}
+      var m = window.matchMedia('(prefers-color-scheme: dark)');
+      var t = (s === 'light' || s === 'dark') ? s : (m.matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.style.colorScheme = t;
+    })();
+  </script>
+
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{title}</title>
@@ -25,14 +68,24 @@ const SOCIAL = [
   <link rel="canonical" href={canonical}/>
   <meta name="robots" content="index, follow"/>
 
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="32x32"/>
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+  <meta name="theme-color" content="#F5F5F2" media="(prefers-color-scheme: light)"/>
+  <meta name="theme-color" content="#0B0C1A" media="(prefers-color-scheme: dark)"/>
+
   <meta property="og:type"        content="website"/>
   <meta property="og:title"       content={title}/>
   <meta property="og:description" content={description}/>
   <meta property="og:url"         content={canonical}/>
+  <meta property="og:image"       content={new URL('/og-default.png', canonical).href}/>
+  <meta property="og:image:width"  content="1200"/>
+  <meta property="og:image:height" content="630"/>
 
   <meta name="twitter:card"        content="summary_large_image"/>
   <meta name="twitter:title"       content={title}/>
   <meta name="twitter:description" content={description}/>
+  <meta name="twitter:image"       content={new URL('/og-default.png', canonical).href}/>
 
   {schema && (
     <script type="application/ld+json" set:html={JSON.stringify(schema)}/>
@@ -42,25 +95,7 @@ const SOCIAL = [
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 
-  <style>
-    :root {
-      --paper: #f5f5f2; --paper-2: #ebebe6; --paper-3: #dedcd4;
-      --ink: #0b0d12; --ink-2: #20242e; --ink-3: #3a4050; --ink-4: #6a7080; --ink-5: #a0a5b3;
-      --line: rgba(11,13,18,0.08); --line-strong: rgba(11,13,18,0.14);
-      --orange: #ee6a13; --orange-soft: #ff8a3d; --orange-glow: rgba(238,106,19,0.18);
-      --green: #0fb864; --green-glow: rgba(15,184,100,0.16);
-      --blue: #0b5dee;
-      --glass-bg: rgba(255,255,255,0.55); --glass-bg-strong: rgba(255,255,255,0.75);
-      --glass-border: rgba(255,255,255,0.85); --glass-stroke: rgba(11,13,18,0.06);
-      --glass-blur: 22px; --glass-sat: 160%;
-      --shadow-sm: 0 1px 2px rgba(11,13,18,0.04),0 1px 1px rgba(11,13,18,0.03);
-      --shadow-md: 0 10px 30px -12px rgba(11,13,18,0.15),0 2px 6px rgba(11,13,18,0.05);
-      --shadow-lg: 0 30px 60px -20px rgba(11,13,18,0.25),0 8px 20px rgba(11,13,18,0.06);
-      --radius: 14px; --radius-lg: 20px; --radius-xl: 28px;
-      --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
-      --font-serif: 'Instrument Serif', Georgia, serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-    }
+  <style is:global>
     *, *::before, *::after { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -70,16 +105,9 @@ const SOCIAL = [
       letter-spacing: -0.005em; -webkit-font-smoothing: antialiased;
       overflow-x: hidden; min-height: 100vh;
     }
-    body::before {
-      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background:
-        radial-gradient(900px 600px at 12% 5%, rgba(238,106,19,0.08), transparent 60%),
-        radial-gradient(1000px 700px at 88% 30%, rgba(15,184,100,0.07), transparent 60%),
-        radial-gradient(800px 500px at 50% 110%, rgba(11,93,238,0.05), transparent 60%);
-    }
     #app { position: relative; z-index: 1; }
-    ::selection { background: var(--orange); color: white; }
-    a { color: var(--orange); text-decoration: none; }
+    ::selection { background: var(--accent); color: #fff; }
+    a { color: var(--accent-text); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
     .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 32px; }
@@ -88,7 +116,8 @@ const SOCIAL = [
     /* Nav */
     .site-nav {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(245,245,242,0.88); backdrop-filter: blur(16px) saturate(160%);
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      backdrop-filter: blur(16px) saturate(160%);
       border-bottom: 1px solid var(--line);
       padding: 14px 0;
     }
@@ -96,19 +125,52 @@ const SOCIAL = [
       display: flex; align-items: center; justify-content: space-between; gap: 24px;
     }
     .site-nav__brand {
-      display: flex; align-items: center; gap: 8px;
-      font-weight: 700; font-size: 15px; color: var(--ink); text-decoration: none;
+      display: flex; align-items: center;
+      text-decoration: none; flex-shrink: 0;
+      color: var(--ink);
     }
     .site-nav__brand:hover { text-decoration: none; }
+
+    /* Lockup: full at ≥420px, icon-only below */
+    .sg-logo { line-height: 0; }
+    .sg-logo-lockup { display: block; line-height: 0; }
+    .sg-logo-icon  { display: none;  line-height: 0; }
+    /* Four children on one row. Shed them in order of importance rather than
+       letting the row set a min-width the phone cannot honour. */
+    @media (max-width: 620px) {
+      .site-nav__links { display: none; }
+    }
+    @media (max-width: 460px) {
+      .sg-logo-lockup { display: none; }
+      .sg-logo-icon  { display: block; }
+      .site-nav__cta   { padding: 8px 13px; font-size: 12px; }
+      .site-nav__inner { gap: 12px; }
+    }
+
     .site-nav__links { display: flex; gap: 24px; }
     .site-nav__links a { font-size: 13px; color: var(--ink-3); transition: color 150ms; }
     .site-nav__links a:hover { color: var(--ink); text-decoration: none; }
     .site-nav__cta {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 999px;
-      background: var(--ink); color: white; text-decoration: none; transition: all 180ms;
+      background: var(--ink); color: var(--paper); text-decoration: none; transition: all 180ms;
     }
-    .site-nav__cta:hover { background: var(--ink-2); text-decoration: none; }
+    .site-nav__cta:hover { opacity: 0.85; text-decoration: none; }
+
+    /* Theme toggle */
+    #sg-theme-toggle {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line-strong);
+      background: transparent; cursor: pointer; color: var(--ink-3);
+      transition: border-color 180ms, color 180ms, background 180ms;
+      flex-shrink: 0;
+    }
+    #sg-theme-toggle:hover { color: var(--ink); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+    #sg-theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .sg-sun { display: none; }
+    .sg-moon { display: block; }
+    [data-theme="dark"] .sg-sun  { display: block; }
+    [data-theme="dark"] .sg-moon { display: none; }
 
     /* Footer */
     .site-footer {
@@ -120,6 +182,12 @@ const SOCIAL = [
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
       flex-wrap: wrap;
     }
+    .site-footer__brand { display: flex; align-items: center; gap: 12px; }
+    .site-footer__brand .sg-logo { line-height: 0; }
+    .site-footer__meta { display: flex; flex-direction: column; gap: 4px; line-height: 1.5; }
+    .site-footer__contact { font-size: 12px; color: var(--ink-4); display: flex; gap: 6px; flex-wrap: wrap; }
+    .site-footer__contact a { color: var(--ink-4); text-decoration: none; }
+    .site-footer__contact a:hover { color: var(--accent-text); text-decoration: underline; }
     .site-footer__copy { font-size: 12px; color: var(--ink-5); }
     .site-footer__links { display: flex; gap: 20px; }
     .site-footer__links a { font-size: 12px; color: var(--ink-4); }
@@ -134,18 +202,18 @@ const SOCIAL = [
     .footer-email__form { display: flex; gap: 8px; flex-wrap: wrap; }
     .footer-email__form input[type="email"] {
       padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line-strong);
-      background: var(--paper); color: var(--ink); font-family: var(--font-sans);
+      background: var(--field-bg); color: var(--ink); font-family: var(--font-sans);
       font-size: 13px; outline: none; min-width: 200px; transition: border-color 200ms;
     }
-    .footer-email__form input[type="email"]:focus { border-color: var(--orange); }
+    .footer-email__form input[type="email"]:focus { border-color: var(--accent); }
     .footer-email__form input[type="email"]::placeholder { color: var(--ink-5); }
     .footer-email__form button[type="submit"] {
       padding: 9px 18px; border-radius: 999px; border: none; background: var(--ink);
-      color: white; font-size: 13px; font-weight: 500; font-family: var(--font-sans);
+      color: var(--paper); font-size: 13px; font-weight: 500; font-family: var(--font-sans);
       cursor: pointer; transition: background 180ms; white-space: nowrap;
     }
-    .footer-email__form button[type="submit"]:hover { background: var(--ink-2); }
-    .footer-email__result { font-size: 13px; color: var(--green); font-weight: 500; padding: 9px 0; }
+    .footer-email__form button[type="submit"]:hover { opacity: 0.85; }
+    .footer-email__result { font-size: 13px; color: var(--pos-text); font-weight: 500; padding: 9px 0; }
 
     /* Social icons */
     .social-bar { display: flex; gap: 14px; align-items: center; }
@@ -156,13 +224,13 @@ const SOCIAL = [
       transition: color 180ms, border-color 180ms, background 180ms;
       text-decoration: none;
     }
-    .social-bar a:hover { color: var(--orange); border-color: var(--orange); background: rgba(238,106,19,0.06); }
+    .social-bar a:hover { color: var(--accent-text); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
     .social-bar a[aria-disabled="true"] { pointer-events: none; opacity: 0.35; }
 
     /* Breadcrumbs */
     .breadcrumbs { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink-4); margin-bottom: 32px; }
     .breadcrumbs a { color: var(--ink-4); }
-    .breadcrumbs a:hover { color: var(--orange); text-decoration: none; }
+    .breadcrumbs a:hover { color: var(--accent-text); text-decoration: none; }
     .breadcrumbs span { color: var(--ink-5); }
 
     /* Glass card */
@@ -187,7 +255,7 @@ const SOCIAL = [
 
     /* Email capture modal */
     #sg-email-modal { display: none; position: fixed; inset: 0; z-index: 9999; }
-    #sg-modal-backdrop { position: absolute; inset: 0; background: rgba(11,13,18,0.6); backdrop-filter: blur(4px); cursor: pointer; }
+    #sg-modal-backdrop { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 55%, transparent); backdrop-filter: blur(4px); cursor: pointer; }
     #sg-modal-inner {
       position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
       width: min(440px, calc(100vw - 32px)); background: var(--paper);
@@ -200,30 +268,30 @@ const SOCIAL = [
       }
     }
     #sg-modal-close {
-      position: absolute; top: 14px; right: 14px; background: rgba(11,13,18,0.06); border: none;
+      position: absolute; top: 14px; right: 14px; background: var(--line-strong); border: none;
       border-radius: 999px; width: 28px; height: 28px; font-size: 18px; line-height: 1;
       cursor: pointer; color: var(--ink-3); display: flex; align-items: center; justify-content: center;
       transition: background 150ms;
     }
-    #sg-modal-close:hover { background: rgba(11,13,18,0.12); }
+    #sg-modal-close:hover { background: var(--line); }
     .sg-modal-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; font-family: var(--font-serif); }
     .sg-modal-desc { font-size: 14px; color: var(--ink-3); margin: 0 0 24px; line-height: 1.65; }
     .modal-email-form { display: flex; flex-direction: column; gap: 10px; }
     .modal-email-form input[type="email"] {
       padding: 11px 16px; border-radius: 999px; border: 1px solid var(--line-strong);
-      background: var(--paper); color: var(--ink); font-family: var(--font-sans);
+      background: var(--field-bg); color: var(--ink); font-family: var(--font-sans);
       font-size: 14px; outline: none; transition: border-color 200ms;
     }
-    .modal-email-form input[type="email"]:focus { border-color: var(--orange); }
+    .modal-email-form input[type="email"]:focus { border-color: var(--accent); }
     .modal-email-form input[type="email"]::placeholder { color: var(--ink-5); }
     .modal-email-form button[type="submit"] {
-      padding: 12px 20px; border-radius: 999px; border: none; background: var(--orange);
+      padding: 12px 20px; border-radius: 999px; border: none; background: var(--accent);
       color: white; font-size: 14px; font-weight: 600; font-family: var(--font-sans);
-      cursor: pointer; transition: background 180ms; box-shadow: 0 4px 14px rgba(238,106,19,0.3);
+      cursor: pointer; transition: background 180ms; box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
     }
-    .modal-email-form button[type="submit"]:hover { background: #d95e0f; }
+    .modal-email-form button[type="submit"]:hover { background: var(--accent-hover); }
     .modal-legal { font-size: 11px; color: var(--ink-5); margin: 10px 0 0 !important; }
-    .modal-result { font-size: 14px; font-weight: 500; color: var(--green); margin-top: 12px; }
+    .modal-result { font-size: 14px; font-weight: 500; color: var(--pos-text); margin-top: 12px; }
     @media (prefers-reduced-motion: no-preference) and (min-width: 641px) {
       #sg-email-modal.is-open { animation: sgFadeIn 250ms ease both; }
       #sg-email-modal.is-open #sg-modal-inner { animation: sgSlideUp 300ms cubic-bezier(.2,.7,.2,1) both; }
@@ -232,26 +300,37 @@ const SOCIAL = [
     }
   </style>
 </head>
-<body>
+<body class="sg-wash">
 <div id="app">
   <nav class="site-nav">
     <div class="container">
       <div class="site-nav__inner">
-        <a href="/" class="site-nav__brand">
-          <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
-            <rect width="40" height="40" rx="10" fill="#ee6a13"/>
-            <path d="M12 28L20 12L28 28" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M15 22H25" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-          Sigmentum
+        <a href="/" class="site-nav__brand sg-logo" aria-label="Sigmentum — home">
+          <!-- Full lockup (≥420px) -->
+          <span class="sg-logo-lockup"><Fragment set:html={lockupLg}/></span>
+          <!-- Icon only (<420px) -->
+          <span class="sg-logo-icon"><Fragment set:html={iconSvg}/></span>
         </a>
         <div class="site-nav__links">
           <a href="/glossary">Glossary</a>
           <a href="/#pricing">Pricing</a>
         </div>
-        <a href="/app/" class="site-nav__cta">
-          Open app →
-        </a>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button id="sg-theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark theme">
+            <!-- Sun (shown in dark mode) -->
+            <svg class="sg-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
+            <!-- Moon (shown in light mode) -->
+            <svg class="sg-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+          <a href="/?utm_source=sigmentum&utm_medium=astro_nav&utm_content=nav_waitlist#waitlist" class="site-nav__cta">
+            Join the waitlist →
+          </a>
+        </div>
       </div>
     </div>
   </nav>
@@ -264,7 +343,7 @@ const SOCIAL = [
     <div class="container">
 
       <!-- Email capture -->
-      <div class="footer-email">
+      <div class="footer-email" id="waitlist">
         <p class="footer-email__copy">
           One signal breakdown a week — the trade, the reasoning, and whether it worked.
         </p>
@@ -278,7 +357,19 @@ const SOCIAL = [
       </div>
 
       <div class="site-footer__inner">
-        <div class="site-footer__copy">© 2026 Sigmentum · 2882 LLC · Not financial advice.</div>
+        <div class="site-footer__brand">
+          <span class="sg-logo"><Fragment set:html={lockupFt}/></span>
+<div class="site-footer__meta">
+            <span class="site-footer__copy">© 2026 Sigmentum — a product of 2882 LLC. All rights reserved.</span>
+            <span class="site-footer__contact">
+              <a href="mailto:support@sigmentumtrade.com">support@sigmentumtrade.com</a>
+              <span aria-hidden="true">·</span>
+              <a href="https://sigmentumtrade.com">sigmentumtrade.com</a>
+              <span aria-hidden="true">·</span>
+              Not financial advice.
+            </span>
+          </div>
+        </div>
         <nav class="social-bar" aria-label="Social links">
           {SOCIAL.map(s => (
             <a
@@ -297,7 +388,9 @@ const SOCIAL = [
         <div class="site-footer__links">
           <a href="/glossary">Glossary</a>
           <a href="/#pricing">Pricing</a>
-          <a href="/app/">Platform</a>
+          <a href="/#waitlist">Waitlist</a>
+          <a href="/contact">Contact</a>
+          <a href="/refunds">Refunds</a>
         </div>
       </div>
     </div>
@@ -322,20 +415,59 @@ const SOCIAL = [
   </div>
 </div>
 
+<script is:inline>
+  // Enable theme crossfade only after first paint (prevents FOUC on navigation)
+  requestAnimationFrame(function () {
+    document.documentElement.classList.add('sg-theme-ready');
+  });
+</script>
+
 <script define:vars={{ bdUsername }}>
+  // — theme toggle —
+  var _mqMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function sgSetTheme(t, persist) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.style.colorScheme = t;
+    if (persist) { try { localStorage.setItem('sg-theme', t); } catch (e) {} }
+    var b = document.getElementById('sg-theme-toggle');
+    if (b) {
+      b.setAttribute('aria-pressed', String(t === 'dark'));
+      b.setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    }
+  }
+
+  // Sync initial aria state
+  sgSetTheme(document.documentElement.getAttribute('data-theme') || 'light', false);
+
+  // Follow OS when no stored preference
+  _mqMedia.addEventListener('change', function (e) {
+    var stored = null;
+    try { stored = localStorage.getItem('sg-theme'); } catch (_) {}
+    if (!stored) sgSetTheme(e.matches ? 'dark' : 'light', false);
+  });
+
+  var toggleBtn = document.getElementById('sg-theme-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function () {
+      var current = document.documentElement.getAttribute('data-theme') || 'light';
+      sgSetTheme(current === 'dark' ? 'light' : 'dark', true);
+    });
+  }
+
   // — helpers —
   function sgCookieGet(n) {
-    const m = document.cookie.split('; ').find(r => r.startsWith(n + '='));
+    var m = document.cookie.split('; ').find(function (r) { return r.startsWith(n + '='); });
     return m ? decodeURIComponent(m.split('=').slice(1).join('=')) : null;
   }
   function sgCookieSet(n, v, days) {
-    const exp = days ? '; expires=' + new Date(Date.now() + days * 864e5).toUTCString() : '';
+    var exp = days ? '; expires=' + new Date(Date.now() + days * 864e5).toUTCString() : '';
     document.cookie = n + '=' + encodeURIComponent(v) + exp + '; path=/; SameSite=Lax';
   }
   async function sgSubscribe(email) {
-    if (!bdUsername) return 'ok'; // pre-launch: accept silently
+    if (!bdUsername) return 'ok';
     try {
-      const r = await fetch('https://buttondown.email/api/emails/embed-subscribe/' + bdUsername, {
+      var r = await fetch('https://buttondown.email/api/emails/embed-subscribe/' + bdUsername, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'email=' + encodeURIComponent(email),
@@ -362,7 +494,7 @@ const SOCIAL = [
       } else {
         btn.textContent = 'Subscribe'; btn.disabled = false;
         footerResult.textContent      = 'Something went wrong — try again.';
-        footerResult.style.color      = 'var(--orange)';
+        footerResult.style.color      = 'var(--accent-text)';
         footerResult.style.display    = 'block';
       }
     });
@@ -416,7 +548,6 @@ const SOCIAL = [
       });
     }
 
-    // triggers — never on first paint, never if already dismissed
     var ready = false;
     setTimeout(function () { ready = true; }, 3000);
     var triggered = false;

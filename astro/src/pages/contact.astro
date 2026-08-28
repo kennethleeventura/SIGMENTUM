@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+
+const siteUrl   = (Astro.site?.href ?? 'https://sigmentumtrade.com').replace(/\/$/, '');
+const canonical = `${siteUrl}/contact`;
+const title       = 'Contact — Sigmentum';
+const description = 'Get in touch with the Sigmentum team. For billing, refunds, and account questions email support@sigmentumtrade.com.';
+---
+<Base title={title} description={description} canonical={canonical}>
+  <div class="container" style="padding-top: 56px; padding-bottom: 96px; max-width: 640px;">
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span>›</span>
+      <span style="color: var(--ink-3);">Contact</span>
+    </nav>
+
+    <h1 class="serif" style="font-size: clamp(28px, 5vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); margin: 0 0 16px;">
+      Contact
+    </h1>
+    <p style="font-size: 16px; color: var(--ink-3); line-height: 1.7; margin: 0 0 48px;">
+      We read every email. For fastest resolution, include the email address on your account.
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+
+      <!-- Support -->
+      <div class="glass" style="padding: 26px 30px;">
+        <div class="eyebrow" style="color: var(--accent-text); margin-bottom: 10px;">Support &amp; billing</div>
+        <p style="font-size: 15px; color: var(--ink-3); line-height: 1.7; margin: 0 0 14px;">
+          Account issues, billing questions, refund requests, and anything else.
+        </p>
+        <a href="mailto:support@sigmentumtrade.com"
+           style="display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: var(--accent-text); text-decoration: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="20" height="16" x="2" y="4" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+          support@sigmentumtrade.com
+        </a>
+      </div>
+
+      <!-- Refunds note -->
+      <div style="background: color-mix(in srgb, var(--ink) 3%, transparent); border-radius: var(--radius); padding: 18px 22px; font-size: 14px; color: var(--ink-3); line-height: 1.65;">
+        For refund requests, see our <a href="/refunds" style="color: var(--accent-text);">Refunds &amp; Cancellation policy</a> —
+        we honour a 14-day no-questions refund on first payments.
+      </div>
+
+      <!-- Company -->
+      <div style="padding-top: 8px; border-top: 1px solid var(--line);">
+        <p style="font-size: 13px; color: var(--ink-4); margin: 0; line-height: 1.7;">
+          Sigmentum is a product of 2882 LLC. Nothing on this site constitutes financial advice.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</Base>

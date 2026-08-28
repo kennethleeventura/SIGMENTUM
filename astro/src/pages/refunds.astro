@@ -1,0 +1,136 @@
+---
+import Base from '../layouts/Base.astro';
+
+const siteUrl  = (Astro.site?.href ?? 'https://sigmentumtrade.com').replace(/\/$/, '');
+const canonical = `${siteUrl}/refunds`;
+const title       = 'Refunds & Cancellation — Sigmentum';
+const description = 'Cancel any time. First payment refunded within 14 days, no questions asked. Duplicate and unauthorised charges always refunded.';
+---
+<Base title={title} description={description} canonical={canonical}>
+  <div class="container" style="padding-top: 56px; padding-bottom: 96px; max-width: 720px;">
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span>›</span>
+      <span style="color: var(--ink-3);">Refunds &amp; Cancellation</span>
+    </nav>
+
+    <h1 class="serif" style="font-size: clamp(28px, 5vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); margin: 0 0 8px;">
+      Refunds &amp; Cancellation
+    </h1>
+    <p style="font-size: 13px; color: var(--ink-4); margin: 0 0 48px;">
+      Last updated: August 23, 2026 · Sigmentum, a product of 2882 LLC
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 40px;">
+
+      <!-- Cancel any time -->
+      <div>
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--ink); margin: 0 0 12px; letter-spacing: -0.01em;">
+          Cancel any time
+        </h2>
+        <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0 0 12px;">
+          You can cancel a paid plan at any time from your account settings — the same place you signed up.
+          No phone call, no email required, no retention flow.
+        </p>
+        <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0;">
+          Cancelling stops all future charges. Your access continues until the end of the billing period
+          you have already paid for. We do not pro-rate partial months.
+        </p>
+      </div>
+
+      <!-- Refunds -->
+      <div>
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--ink); margin: 0 0 12px; letter-spacing: -0.01em;">
+          Refunds
+        </h2>
+
+        <div class="glass" style="padding: 22px 26px; margin-bottom: 20px;">
+          <div class="eyebrow" style="color: var(--accent-text); margin-bottom: 8px;">First payment — 14 days, no questions asked</div>
+          <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0;">
+            If you are not satisfied, email <a href="mailto:support@sigmentumtrade.com">support@sigmentumtrade.com</a> within
+            14 days of your first payment on a paid plan and we will refund it in full. You do not need to give a reason.
+          </p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: var(--ink-2); margin: 0 0 8px;">Later renewals</h3>
+          <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0;">
+            Renewal charges are not routinely refunded. Cancel before your renewal date and you will not be
+            charged again. If something went wrong, write to us — we would rather resolve it than have you dispute it.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: 15px; font-weight: 600; color: var(--ink-2); margin: 0 0 12px;">Always refunded, without limit</h3>
+          <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px;">
+            {[
+              'Duplicate or accidental charges.',
+              'Charges you did not authorise.',
+              'Any period where the service was unavailable or materially not as described.',
+            ].map(item => (
+              <li style="display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: var(--ink-3); line-height: 1.6;">
+                <span style="color: var(--pos); font-weight: 700; flex-shrink: 0; margin-top: 2px;">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Free plan -->
+      <div>
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--ink); margin: 0 0 12px; letter-spacing: -0.01em;">
+          The Free plan
+        </h2>
+        <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0;">
+          The Free plan is free. Nothing is charged, so there is nothing to refund.
+        </p>
+      </div>
+
+      <!-- How to request -->
+      <div>
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--ink); margin: 0 0 12px; letter-spacing: -0.01em;">
+          How to request a refund
+        </h2>
+        <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0;">
+          Email <a href="mailto:support@sigmentumtrade.com">support@sigmentumtrade.com</a> from the address on the account.
+          Approved refunds are returned to the original payment method and typically appear within 5–10 business days,
+          depending on your bank.
+        </p>
+      </div>
+
+      <!-- Dispute -->
+      <div class="glass" style="padding: 22px 26px; border-left: 3px solid var(--accent);">
+        <h2 style="font-size: 18px; font-weight: 700; color: var(--ink); margin: 0 0 8px; letter-spacing: -0.01em;">
+          Before you dispute a charge
+        </h2>
+        <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0;">
+          Please <a href="mailto:support@sigmentumtrade.com">contact us</a> first. We will almost always resolve it
+          faster than your bank can, and a dispute locks the funds while it is investigated.
+        </p>
+      </div>
+
+      <!-- What we sell -->
+      <div>
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--ink); margin: 0 0 12px; letter-spacing: -0.01em;">
+          What we sell
+        </h2>
+        <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0;">
+          Sigmentum is a software subscription. It provides algorithmically generated technical-analysis signals and
+          a historical backtesting tool. It is general information, not personalised investment advice, and nothing
+          on this site is a recommendation to buy or sell any instrument. Not financial advice.
+        </p>
+      </div>
+
+      <!-- Contact -->
+      <div style="padding-top: 8px; border-top: 1px solid var(--line);">
+        <p style="font-size: 13px; color: var(--ink-4); margin: 0;">
+          Questions? <a href="mailto:support@sigmentumtrade.com">support@sigmentumtrade.com</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</Base>

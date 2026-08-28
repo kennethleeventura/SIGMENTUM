@@ -1,0 +1,141 @@
+/* ============================================================
+   SIGMENTUM — brand + theme tokens
+   Source of truth: SIGMANTUM LOGOS.ai (vector, 8 artboards)
+   Colours sampled directly from the vector fills — not eyeballed.
+   Contrast ratios in comments are WCAG 2.1 measured, not estimated.
+   ============================================================ */
+
+/* ---- Immutable brand constants (never re-tint these) -------- */
+:root {
+  --sg-navy:   #1A1B3E;  /* wordmark ink                        */
+  --sg-orange: #F06303;  /* logo arcs + centre dot              */
+  --sg-green:  #0AA152;  /* logo arcs                           */
+  --sg-spring: #02EE82;  /* tagline "MOMENTUM" — dark surfaces  */
+  --sg-white:  #FFFFFF;  /* knockout wordmark                   */
+
+  /* Aliases kept for backward-compat with existing pages */
+  --navy:   var(--sg-navy);
+  --orange: var(--sg-orange);
+  --green:  var(--sg-green);
+  --spring: var(--sg-spring);
+
+  /* Typography */
+  --font-sans:  'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radii */
+  --radius:    14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Glass utilities */
+  --glass-blur: 22px;
+  --glass-sat:  160%;
+}
+
+/* ---- LIGHT ------------------------------------------------- */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --paper:    #F5F5F2;
+  --paper-2:  #ECECE7;
+  --paper-3:  #E0DFD8;
+
+  --ink:      #1A1B3E;  /* 15.14:1 */
+  --ink-2:    #2A2C55;  /* 11.30:1 */
+  --ink-3:    #4A4E70;  /*  7.35:1 */
+  --ink-4:    #5C6080;  /*  5.59:1 */
+  --ink-5:    #8A8FA8;  /*  3.05:1 — decorative only, never body text */
+
+  --line:        rgba(26, 27, 62, 0.10);
+  --line-strong: rgba(26, 27, 62, 0.18);
+
+  /* Accents split into FILL vs TEXT.
+     Raw brand orange is 2.96:1 on paper — it fails AA as text.
+     Use --accent for shapes/icons/borders, --accent-text for anything read. */
+  --accent:       #F06303;
+  --accent-text:  #BB4D02;  /* 4.60:1 — AA body text            */
+  --accent-hover: #A34302;
+  --accent-glow:  rgba(240, 99, 3, 0.16);
+
+  --pos:          #0AA152;
+  --pos-text:     #088142;  /* 4.55:1 — AA body text            */
+  --pos-glow:     rgba(10, 161, 82, 0.14);
+
+  --glass-bg:        rgba(255, 255, 255, 0.58);
+  --glass-strong:    rgba(255, 255, 255, 0.78);
+  --glass-bg-strong: var(--glass-strong);   /* alias */
+  --glass-edge:      rgba(255, 255, 255, 0.85);
+  --glass-border:    var(--glass-edge);     /* alias */
+  --glass-stroke:    rgba(26, 27, 62, 0.07);
+
+  --shadow-sm: 0 1px 2px rgba(26,27,62,.05), 0 1px 1px rgba(26,27,62,.03);
+  --shadow-md: 0 10px 30px -12px rgba(26,27,62,.16), 0 2px 6px rgba(26,27,62,.05);
+  --shadow-lg: 0 30px 60px -20px rgba(26,27,62,.26), 0 8px 20px rgba(26,27,62,.07);
+
+  --logo-ink: var(--sg-navy);       /* drives the adaptive SVGs */
+  --field-bg: var(--paper);
+}
+
+/* ---- DARK -------------------------------------------------- */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --paper:    #0B0C1A;  /* navy-black, derived from #1A1B3E    */
+  --paper-2:  #12142E;
+  --paper-3:  #1A1D3B;
+
+  --ink:      #F2F3F7;  /* 17.51:1 */
+  --ink-2:    #DDE0EC;  /* 14.80:1 */
+  --ink-3:    #C7CAD9;  /* 11.91:1 */
+  --ink-4:    #A7ACC4;  /*  8.64:1 */
+  --ink-5:    #8E93AD;  /*  6.40:1 */
+
+  --line:        rgba(255, 255, 255, 0.10);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  --accent:       #F06303;
+  --accent-text:  #FC7417;  /* 7.07:1 — AAA body text           */
+  --accent-hover: #FF8C3D;
+  --accent-glow:  rgba(252, 116, 23, 0.20);
+
+  --pos:          #0AA152;
+  --pos-text:     #0BB45C;  /* 7.12:1 — AAA body text           */
+  --pos-glow:     rgba(2, 238, 130, 0.16);
+
+  --glass-bg:        rgba(255, 255, 255, 0.045);
+  --glass-strong:    rgba(255, 255, 255, 0.075);
+  --glass-bg-strong: var(--glass-strong);
+  --glass-edge:      rgba(255, 255, 255, 0.10);
+  --glass-border:    var(--glass-edge);
+  --glass-stroke:    rgba(255, 255, 255, 0.08);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.40);
+  --shadow-md: 0 10px 30px -12px rgba(0,0,0,.65), 0 2px 6px rgba(0,0,0,.35);
+  --shadow-lg: 0 30px 60px -20px rgba(0,0,0,.75), 0 8px 20px rgba(0,0,0,.40);
+
+  --logo-ink: var(--sg-white);
+  --field-bg: var(--paper-2);
+}
+
+/* ---- Ambient wash (theme-aware) ---------------------------- */
+.sg-wash::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(900px 600px at 12%  5%,  var(--accent-glow), transparent 60%),
+    radial-gradient(1000px 700px at 88% 30%, var(--pos-glow),    transparent 60%);
+}
+
+/* ---- Adaptive logo: colour the wordmark, leave arcs alone --- */
+.sg-logo { color: var(--logo-ink); }
+
+/* ---- Cross-fade on theme change (respects reduced motion) --- */
+@media (prefers-reduced-motion: no-preference) {
+  html.sg-theme-ready body,
+  html.sg-theme-ready .site-nav,
+  html.sg-theme-ready .glass {
+    transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease;
+  }
+}

@@ -98,6 +98,64 @@ jobs:
           echo "Broken internal links: $BROKEN"
           [ "$BROKEN" -eq 0 ]
 
+      - name: Assert no legacy palette in dist
+        run: |
+          if grep -riE "#(ee6a13|0b5dee|0fb864|0b0d12|d95e0f|ff8a3d)" astro/dist/ 2>/dev/null; then
+            echo "ERROR: legacy off-brand hex found in astro/dist"; exit 1; fi
+          echo "OK: palette clean"
+
+      - name: Assert theme bootstrap on every page
+        run: |
+          MISSING=0
+          while IFS= read -r f; do
+            grep -q "sg-theme" "$f" || { echo "NO THEME SCRIPT: $f"; MISSING=$((MISSING+1)); }
+          done < <(find astro/dist -name "*.html")
+          echo "Pages missing theme bootstrap: $MISSING"
+          [ "$MISSING" -eq 0 ]
+
+      - name: Assert no oversized inline SVG roots
+        run: |
+          # An inlined <svg> that keeps the source file's width attribute renders
+          # at that width; width:auto in style does not override it on an SVG
+          # root. This shipped a 1570px-wide nav lockup once already. Scoped to
+          # HTML — the standalone .svg files in dist/brand/ carry their intrinsic
+          # width legitimately.
+          if find astro/dist -name "*.html" -exec grep -loE '<svg[^>]*width="[0-9]{3,}' {} + 2>/dev/null | grep .; then
+            echo "ERROR: inline <svg> root with a 3+ digit width attribute"
+            exit 1
+          fi
+          echo "OK: no oversized inline SVG roots"
+
+      - name: Assert no fabricated market values in dist
+        run: |
+          # Hard constraint: no value shown to a user may be invented. These
+          # literals shipped as a real "latest signal". XAU/USD is also a
+          # non-display asset — its prices must never render.
+          if grep -rniE "LATEST SIGNAL|2,341|2,358|2,328" astro/dist/ 2>/dev/null; then
+            echo "ERROR: fabricated signal values found in astro/dist"
+            exit 1
+          fi
+          echo "OK: no fabricated signal values"
+
+      - name: Assert business contact details present
+        run: |
+          # Stripe verification requires a reachable contact route on the site.
+          for f in index contact refunds; do
+            grep -q "support@sigmentumtrade.com" "astro/dist/$f/index.html" 2>/dev/null || \
+            grep -q "support@sigmentumtrade.com" "astro/dist/$f.html" 2>/dev/null || \
+            { echo "MISSING contact email on /$f"; exit 1; }
+          done
+          grep -q "support@sigmentumtrade.com" astro/dist/index.html || { echo "MISSING contact email on /"; exit 1; }
+          echo "OK: contact details present"
+
+      - name: Assert brand assets shipped
+        run: |
+          for f in favicon.svg favicon.ico apple-touch-icon.png og-default.png \
+                   brand/sigmentum-lockup-adaptive.svg brand/sigmentum-icon.svg; do
+            test -f "astro/dist/$f" || { echo "MISSING: $f"; exit 1; }
+          done
+          echo "OK: brand assets present"
+
       - name: Fail if sigmentum.com in Astro dist
         run: |
           if grep -r "sigmentum\.com" astro/dist/ 2>/dev/null; then

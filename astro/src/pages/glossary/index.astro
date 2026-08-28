@@ -26,7 +26,7 @@ const schema = {
 
     <!-- Header -->
     <div style="max-width: 600px; margin-bottom: 56px;">
-      <div class="eyebrow" style="margin-bottom: 14px; color: var(--orange);">SIGMENTUM · GLOSSARY</div>
+      <div class="eyebrow" style="margin-bottom: 14px; color: var(--accent-text);">SIGMENTUM · GLOSSARY</div>
       <h1 class="serif" style="font-size: clamp(32px, 5vw, 52px); margin: 0 0 16px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;">
         Every term in the signal feed, explained.
       </h1>
@@ -45,14 +45,14 @@ const schema = {
                onmouseout="this.style.transform=''; this.style.boxShadow=''">
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
               <div style="font-size: 14px; font-weight: 700; color: var(--ink);">{g.term}</div>
-              <div class="mono" style="font-size: 10px; color: var(--orange); background: rgba(238,106,19,0.1); padding: 2px 7px; border-radius: 999px; flex-shrink: 0; margin-top: 2px;">
+              <div class="mono" style="font-size: 10px; color: var(--accent-text); background: color-mix(in srgb, var(--accent) 10%, transparent); padding: 2px 7px; border-radius: 999px; flex-shrink: 0; margin-top: 2px;">
                 score {g.score}
               </div>
             </div>
             <div style="font-size: 13px; color: var(--ink-3); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
               {g.def}
             </div>
-            <div style="margin-top: 12px; font-size: 12px; color: var(--orange); font-weight: 500;">Read more →</div>
+            <div style="margin-top: 12px; font-size: 12px; color: var(--accent-text); font-weight: 500;">Read more →</div>
           </div>
         </a>
       ))}
