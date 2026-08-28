@@ -1,0 +1,152 @@
+---
+import Base from '../layouts/Base.astro';
+
+const siteUrl   = (Astro.site?.href ?? 'https://sigmentumtrade.com').replace(/\/$/, '');
+const canonical = `${siteUrl}/privacy`;
+const title       = 'Privacy Policy — Sigmentum';
+const description = 'What Sigmentum collects, why, who processes it, and how to get your data deleted. We do not sell personal information.';
+
+const sections = [
+  {
+    h: 'Summary',
+    p: [
+      'Sigmentum is a product of 2882 LLC. We collect the minimum we need to run a subscription service: an email address, account and billing records, and basic usage data. We do not sell personal information and we do not share it for cross-context behavioural advertising.',
+    ],
+  },
+  {
+    h: 'What we collect',
+    p: [
+      'Email address — when you join the waitlist, subscribe to the newsletter, create an account or email support.',
+      'Account data — when accounts are available: your sign-in identifier and authentication state, handled by Firebase Authentication (Google LLC). We do not store your password; Firebase does.',
+      'Billing data — plan, subscription status, and payment records held by Stripe, Inc. Stripe processes the card. We receive confirmation of a charge, the last four digits and card brand. We never receive or store your full card number.',
+      'Usage data — pages requested, referring page, approximate location derived from IP, browser and device type, and any UTM parameters on the link you arrived through. This is standard web-server and analytics data.',
+      'Content you create — rules and strategies you write in the Hindsight Sandbox, and the results of running them.',
+    ],
+  },
+  {
+    h: 'What we do not collect',
+    p: [
+      'We do not ask for and do not want your brokerage credentials, account numbers, government ID numbers, or financial account details. Sigmentum does not connect to brokerage accounts.',
+    ],
+  },
+  {
+    h: 'Why we use it',
+    p: [
+      'To operate the Service and deliver the signals, alerts and backtests you ask for; to take payment and manage subscriptions; to send service messages and, if you opted in, the newsletter; to keep the Service secure and diagnose faults; and to meet legal and tax obligations.',
+      'Where the law requires a legal basis, ours is: performance of our contract with you (account and billing), your consent (marketing email), and our legitimate interests in running and securing the Service.',
+    ],
+  },
+  {
+    h: 'Who processes it for us',
+    p: [
+      'We use a small number of processors, each handling only what its function requires:',
+    ],
+    list: [
+      'Stripe, Inc. — payments and subscription billing',
+      'Buttondown — newsletter and waitlist email',
+      'Google LLC (Firebase) — authentication, when accounts are available',
+      'GitHub, Inc. (GitHub Pages) — website hosting and server logs',
+    ],
+    after: [
+      'We may also disclose information where we are legally required to, or to establish or defend a legal claim. If the business is ever sold or merged, account records may transfer to the acquirer, subject to this policy.',
+    ],
+  },
+  {
+    h: 'Cookies and local storage',
+    p: [
+      'The site stores your light/dark theme choice in your browser under the key sg-theme, and sets a cookie recording that you dismissed the newsletter dialog so it does not reappear for 30 days. Both stay in your browser and are readable only by this site.',
+      'Our processors set their own cookies when you interact with them — Stripe during checkout, for example. Blocking cookies will not break reading the site.',
+    ],
+  },
+  {
+    h: 'How long we keep it',
+    p: [
+      'Newsletter and waitlist addresses are kept until you unsubscribe. Account and billing records are kept while your account is open and afterwards for as long as tax and accounting law requires — generally seven years. Server logs are kept for a short operational period. Sandbox rules are kept while your account is open.',
+    ],
+  },
+  {
+    h: 'Your choices and rights',
+    p: [
+      'You can unsubscribe from any marketing email using the link in it. You can ask us to give you a copy of your data, correct it, or delete it, and you can object to or restrict certain processing. Email support@sigmentumtrade.com and we will respond within 30 days.',
+      'If you are in California, you have the right to know what we collect, to delete it, to correct it, and to not be discriminated against for exercising those rights. We do not sell personal information or share it for cross-context behavioural advertising, so there is nothing to opt out of. If you are in the EEA or UK, you also have the right to complain to your data protection authority.',
+      'Deleting your account does not reverse charges already made; refunds are handled under the Refunds & Cancellation policy.',
+    ],
+    link: { href: '/refunds', text: 'Refunds & Cancellation policy' },
+  },
+  {
+    h: 'Security',
+    p: [
+      'The site is served over TLS, payments are handled by a PCI-compliant processor, and access to production systems is limited. No service can promise perfect security, and we do not. If a breach affects your data and the law requires notice, we will notify you.',
+    ],
+  },
+  {
+    h: 'International transfers',
+    p: [
+      'Our processors are based in the United States, so data you give us is processed there. If you are outside the US, you are transferring it to a country whose data protection law may differ from your own.',
+    ],
+  },
+  {
+    h: 'Children',
+    p: [
+      'The Service is not for anyone under 18 and we do not knowingly collect data from children. If you believe a child has given us information, email us and we will delete it.',
+    ],
+  },
+  {
+    h: 'Changes',
+    p: [
+      'We will update this page when our practices change and will move the date at the top. If a change is material we will give notice on the Service or by email.',
+    ],
+  },
+  {
+    h: 'Contact',
+    p: [
+      'Privacy questions and requests go to support@sigmentumtrade.com. The data controller is 2882 LLC.',
+    ],
+    link: { href: '/contact', text: 'Contact us' },
+  },
+];
+---
+<Base title={title} description={description} canonical={canonical}>
+  <div class="container" style="padding-top: 56px; padding-bottom: 96px; max-width: 720px;">
+
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span>›</span>
+      <span style="color: var(--ink-3);">Privacy Policy</span>
+    </nav>
+
+    <h1 class="serif" style="font-size: clamp(28px, 5vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); margin: 0 0 8px;">
+      Privacy Policy
+    </h1>
+    <p style="font-size: 13px; color: var(--ink-4); margin: 0 0 48px;">
+      Last updated: August 28, 2026 · Sigmentum, a product of 2882 LLC
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 40px;">
+      {sections.map(({ h, p, list, after, link }) => (
+        <div>
+          <h2 style="font-size: 20px; font-weight: 700; color: var(--ink); margin: 0 0 12px; letter-spacing: -0.01em;">{h}</h2>
+          {p.map(t => (
+            <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0 0 12px;">{t}</p>
+          ))}
+          {list && (
+            <ul style="margin: 0 0 12px; padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+              {list.map(t => (
+                <li style="font-size: 15px; color: var(--ink-3); line-height: 1.7;">{t}</li>
+              ))}
+            </ul>
+          )}
+          {after && after.map(t => (
+            <p style="font-size: 15px; color: var(--ink-3); line-height: 1.75; margin: 0 0 12px;">{t}</p>
+          ))}
+          {link && (
+            <p style="font-size: 15px; line-height: 1.75; margin: 4px 0 0;">
+              <a href={link.href}>{link.text}</a>
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+
+  </div>
+</Base>

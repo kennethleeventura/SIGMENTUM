@@ -170,8 +170,8 @@ export const GLOSSARY = [
     term: 'Execution agent',
     score: 83,
     def: 'An automated system that monitors live signals and executes trades on your behalf — either sending alerts (Signal tier) or placing orders directly via broker API (Momentum tier). Sigmentum\'s agent runs 24/7 across all covered assets.',
-    detail: 'The execution agent sits between signal generation and the market. On Signal tier, it formats the signal and sends it to your configured Telegram channel or email within seconds of generation. On Momentum tier, it connects to your broker API and places the trade automatically at the signaled entry, with stop loss and take-profit orders submitted simultaneously. The agent never modifies an active position — once placed, the trade is managed by the stop/TP logic set at entry.',
-    seoDesc: 'What is a trading execution agent? How Sigmentum\'s automated agent delivers signals to Telegram and executes trades via broker API on the Momentum tier.',
+    detail: 'The execution agent sits between signal generation and the market. On Signal tier, it formats the signal and sends it to your configured Telegram channel or email within seconds of generation. Automated order placement — where the agent would submit the entry, stop loss and take-profit to a connected broker on your behalf — is in development and is not currently enabled on any tier. Sigmentum does not place trades, does not connect to customer brokerage accounts, and does not manage money.',
+    seoDesc: 'What is a trading execution agent? How Sigmentum\'s agent delivers signals to Telegram and email. Automated order placement is in development and not currently enabled.',
   },
   {
     slug: 'swing-trading',
@@ -217,9 +217,9 @@ export const GLOSSARY = [
     slug: 'copy-trading',
     term: 'Copy trading',
     score: 77,
-    def: 'Automatically replicating the trades of another account or strategy. Sigmentum\'s Momentum tier includes access to the Copy-Agent Marketplace — a leaderboard of automated strategies ranked by verified P&L.',
-    detail: 'Copy trading removes the need to interpret signals and make independent trading decisions — the strategy executes automatically. The critical due-diligence question is not "what is the win rate?" but "what is the maximum drawdown, and can I tolerate it?" A strategy with 70% win rate and 40% max drawdown will psychologically break most traders before they benefit from the long-run edge. Sigmentum\'s marketplace will display verified drawdown metrics, not just returns, when live.',
-    seoDesc: 'Copy trading and copy agents: what automated strategy replication means, how Sigmentum\'s Copy-Agent Marketplace works, and what to look for before copying.',
+    def: 'Automatically replicating the trades of another account or strategy. Sigmentum has a Copy-Agent Marketplace in development. It is not currently available on any tier.',
+    detail: 'Copy trading removes the need to interpret signals and make independent trading decisions — the strategy executes automatically. The critical due-diligence question is not "what is the win rate?" but "what is the maximum drawdown, and can I tolerate it?" A strategy with 70% win rate and 40% max drawdown will psychologically break most traders before they benefit from the long-run edge. If the marketplace launches, it will show drawdown alongside returns rather than returns alone.',
+    seoDesc: 'Copy trading and copy agents: what automated strategy replication means, how Sigmentum\'s planned Copy-Agent Marketplace would work, and what to look for before copying.',
   },
   {
     slug: 'spread',

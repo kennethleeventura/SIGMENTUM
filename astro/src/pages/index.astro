@@ -22,7 +22,7 @@ const schema = {
       url: siteUrl,
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
-      description: 'AI-powered automated trading signal platform with real-time alerts, Hindsight Sandbox backtesting, and auto-execution agents for gold, crypto, forex, and equities.',
+      description: 'AI-ranked trading signals with real-time alerts, plus the Hindsight Sandbox — backtest your own rules against real historical price data for gold, crypto, forex, and equities.',
       offers: [
         { '@type': 'Offer', name: 'Free',     price: '0',  priceCurrency: 'USD', priceSpecification: { '@type': 'UnitPriceSpecification', billingDuration: 'P1M' } },
         { '@type': 'Offer', name: 'Signal',   price: '28', priceCurrency: 'USD', priceSpecification: { '@type': 'UnitPriceSpecification', billingDuration: 'P1M' } },
@@ -32,9 +32,7 @@ const schema = {
         'AI-generated trading signals every 15 minutes',
         'Hindsight Sandbox backtesting (2 years of data)',
         '$10,000 paper trading wallet',
-        'Automated execution agent',
         'Telegram and email alerts',
-        'Copy-agent marketplace',
       ],
     },
     {
@@ -53,7 +51,7 @@ const schema = {
           name: 'How does the Execution Agent work?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'The Execution Agent monitors markets in real-time using your configured rules. When a trigger condition is met (e.g. 85% AI confidence), it sends an alert via Telegram, email, or SMS — or executes the trade automatically via your connected broker API on the Momentum tier.',
+            text: 'The Execution Agent monitors markets in real time using your configured rules — confidence threshold, asset class, time window. When a trigger condition is met it sends an alert via Telegram, email, or SMS. Automated order placement through a connected broker is in development and is not currently enabled on any tier.',
           },
         },
         {
@@ -84,7 +82,7 @@ const schema = {
       </h1>
 
       <p style="font-size: clamp(16px, 2.5vw, 20px); color: var(--ink-3); max-width: 580px; margin: 0 auto 40px; line-height: 1.65;">
-        Sigmentum delivers AI-ranked trading signals for gold, crypto, forex, and equities — with a built-in backtester, a $10k paper wallet, and auto-execution agents. Free to start.
+        Sigmentum delivers AI-ranked trading signals for gold, crypto, forex, and equities — with a built-in backtester and a $10k paper wallet. Free to start.
       </p>
 
       <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
@@ -164,8 +162,8 @@ const schema = {
           },
           {
             step: '03',
-            title: 'You act — or the agent does',
-            body: 'Paper trade with a $10k wallet on Free. Set Telegram alerts on Signal. Let the Execution Agent place orders automatically on Momentum.',
+            title: 'You act on the signal',
+            body: 'Paper trade with a $10k wallet on Free. Set Telegram and email alerts on Signal. Automated order placement is in development and not currently enabled.',
           },
         ].map(({ step, title, body }) => (
           <div class="glass" style="padding: 28px 30px;">
@@ -210,7 +208,7 @@ const schema = {
           {
             icon: '🤖',
             title: 'Execution agent',
-            body: 'Define your trigger rules — confidence threshold, asset class, time window — and the agent places trades automatically via your connected broker API. Momentum tier.',
+            body: 'Define your trigger rules — confidence threshold, asset class, time window — and get alerted the moment they fire. Automated order placement via a connected broker is in development and not currently enabled.',
           },
           {
             icon: '📲',
@@ -310,9 +308,9 @@ const schema = {
           <ul style="list-style: none; padding: 0; margin: 0 0 32px; display: flex; flex-direction: column; gap: 10px;">
             {[
               'Everything in Signal',
-              'Execution agent (auto-trades)',
-              'Broker API integration',
-              'Copy-agent marketplace access',
+              'Execution agent — rule-based alerts',
+              'Broker API integration (in development)',
+              'Copy-agent marketplace (in development)',
               'SMS alerts',
               'Dedicated support',
             ].map(f => (
